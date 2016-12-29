@@ -218,7 +218,7 @@ public class OperateStreamTest
     }
 
     @Test
-    public void customCollector()
+    public void customCollector() //自定义收集器
     {
         //最受欢迎收集器
         assertThat(Stream.of(1, 1, 2, 2, 2, 3, 4, 5, 5).collect(new MostPopularCollector<>()).get(), is(2));

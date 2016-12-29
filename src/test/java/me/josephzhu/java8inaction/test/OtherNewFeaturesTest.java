@@ -42,7 +42,7 @@ public class OtherNewFeaturesTest
     }
 
     @Test
-    public void map()
+    public void map() //map的新增方法
     {
         Map<String, Long> map = Arrays.asList("aa aa aa bb bb cc".split(" "))
                 .stream().collect(Collectors.groupingBy(Function.identity(), counting()));
@@ -78,12 +78,12 @@ public class OtherNewFeaturesTest
     @Test
     @Filter(value = FilterA.class)
     @Filter(value = FilterB.class)
-    public void repeatableAnnotation()
+    public void repeatableAnnotation() //可重复的注解
     {
         class Local
         {
         }
-        ;
+
         Method m = Local.class.getEnclosingMethod();
         Arrays.stream(m.getAnnotationsByType(Filter.class))
                 .map(Unchecked.function(a -> a.value().newInstance()))

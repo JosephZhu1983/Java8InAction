@@ -18,6 +18,12 @@ public class ParallelStreamTest
                 .sequential()
                 .parallel()
                 .forEach(Functions.slowPrint);
+
+        IntStream.rangeClosed(1, 10)
+                .parallel()
+                .sequential()
+                .parallel()
+                .forEach(i->Functions.doubleService.apply(i));
     }
 
     @Test
@@ -30,6 +36,6 @@ public class ParallelStreamTest
     @Test
     public void forEachOrdered()
     {
-        IntStream.rangeClosed(1, 10).parallel().forEachOrdered(Functions.slowPrint);
+        IntStream.rangeClosed(1, 5).parallel().forEachOrdered(Functions.slowPrint);
     }
 }

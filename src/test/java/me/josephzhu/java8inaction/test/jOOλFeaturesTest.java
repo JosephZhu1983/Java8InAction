@@ -42,11 +42,11 @@ public class jOOλFeaturesTest
         assertThat(Seq.of("a", "b", "c").foldRight("!", (t, u) -> t + u)
                 , is("abc!"));
 
-        Seq.of(1, 2, 3, 4).intersperse(0);
+        assertArrayEquals(Seq.of(1, 2, 3, 4).intersperse(0).toArray(), Seq.of(1,0,2,0,3,0,4).toArray());
 
         Seq.of(1, 2, 3, 4, 5).limitWhile(i -> i < 3);
 
-        Seq.of(1, 2, 3, 4, 5).limitUntil(i -> i == 3);
+        Seq.of(1, 2, 3, 4, 5).skipUntil(i -> i == 3);
 
         Seq.of(new Object(), 1, "B", 2L).ofType(Number.class);
 
