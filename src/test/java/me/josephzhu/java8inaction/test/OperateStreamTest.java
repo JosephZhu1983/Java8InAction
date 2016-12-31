@@ -3,9 +3,12 @@ package me.josephzhu.java8inaction.test;
 import me.josephzhu.java8inaction.test.collector.BatchCollector;
 import me.josephzhu.java8inaction.test.collector.MostPopularCollector;
 import me.josephzhu.java8inaction.test.common.Functions;
+import me.josephzhu.java8inaction.test.function.GenerateOrderFunction;
+import me.josephzhu.java8inaction.test.function.GenerateOrderItemFunction;
 import me.josephzhu.java8inaction.test.model.Customer;
 import me.josephzhu.java8inaction.test.model.Order;
 import me.josephzhu.java8inaction.test.model.OrderItem;
+import me.josephzhu.java8inaction.test.model.Product;
 import org.jooq.lambda.tuple.Tuple2;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,9 +17,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.function.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.comparingDouble;
 import static java.util.stream.Collectors.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -50,7 +56,9 @@ public class OperateStreamTest
     @Test
     public void map() //转换
     {
-        orders.stream().filter(order -> order.getTotalPrice() > 40)
+        //for-each进行列表转换完全可以通过map()进行
+
+        orders.stream()
                 .map(order -> new Tuple2<>(order.getCustomerName(), order.getTotalPrice()))
                 .forEach(System.out::println);
 
@@ -80,6 +88,15 @@ public class OperateStreamTest
         //大于50的订单,按照订单价格倒序前5
         orders.stream().filter(order -> order.getTotalPrice() > 20)
                 .sorted((a, b) -> b.getTotalPrice().compareTo(a.getTotalPrice()))
+                .map(order -> new Tuple2(order.getCustomerName(), order.getTotalPrice()))
+                .limit(5)
+                .forEach(System.out::println);
+
+        System.out.println("******");
+
+        //大于50的订单,按照订单价格倒序前5
+        orders.stream().filter(order -> order.getTotalPrice() > 20)
+                .sorted(comparing(Order::getTotalPrice).reversed())
                 .map(order -> new Tuple2(order.getCustomerName(), order.getTotalPrice()))
                 .limit(5)
                 .forEach(System.out::println);
@@ -144,7 +161,7 @@ public class OperateStreamTest
 
 
         //按照用户名分组,选用户下的最大的订单
-        orders.stream().collect(groupingBy(Order::getCustomerName, collectingAndThen(maxBy(Comparator.comparingDouble(Order::getTotalPrice)), Optional::get)))
+        orders.stream().collect(groupingBy(Order::getCustomerName, collectingAndThen(maxBy(comparingDouble(Order::getTotalPrice)), Optional::get)))
                 .forEach((k, v) -> System.out.println(k + "#" + v.getTotalPrice() + "@" + v.getPlacedAt()));
 
         //根据下单年月分组统计订单ID列表
@@ -162,8 +179,8 @@ public class OperateStreamTest
     @Test
     public void maxMin() //最大最小
     {
-        orders.stream().max(Comparator.comparing(Order::getTotalPrice)).ifPresent(System.out::println);
-        orders.stream().min(Comparator.comparing(Order::getTotalPrice)).ifPresent(System.out::println);
+        orders.stream().max(comparing(Order::getTotalPrice)).ifPresent(System.out::println);
+        orders.stream().min(comparing(Order::getTotalPrice)).ifPresent(System.out::println);
     }
 
     @Test
@@ -240,12 +257,12 @@ public class OperateStreamTest
     public void skipLimit() //分页
     {
         orders.stream()
-                .sorted((a, b) -> b.getPlacedAt().compareTo(a.getPlacedAt()))
+                .sorted(comparing(Order::getPlacedAt))
                 .map(order -> order.getCustomerName() + "@" + order.getPlacedAt())
                 .limit(2).forEach(System.out::println);
 
         orders.stream()
-                .sorted((a, b) -> b.getPlacedAt().compareTo(a.getPlacedAt()))
+                .sorted(comparing(Order::getPlacedAt))
                 .map(order -> order.getCustomerName() + "@" + order.getPlacedAt())
                 .skip(2).limit(2).forEach(System.out::println);
     }
@@ -265,5 +282,56 @@ public class OperateStreamTest
                 .filter(order -> order.getTotalPrice() > 40)
                 .peek(order -> System.out.println(order.getTotalPrice()))
                 .collect(toList());
+    }
+
+    @Test
+    public void functionalInterfaces()
+    {
+        //可以看一下java.util.function包
+        Supplier<String> supplier = String::new;
+        Consumer<String> consumer = System.out::println;
+        Predicate<String> predicate = String::isEmpty;
+        Function<String, Integer> function = Integer::valueOf;
+
+        //Predicate的例子
+        Predicate<Integer> positiveNumber = i -> i > 0;
+        Predicate<Integer> evenNumber = i -> i % 2 == 0;
+        assertTrue(positiveNumber.and(evenNumber).test(2));
+
+        //Consumer的例子
+        Consumer<String> println = System.out::println;
+        println.andThen(println).accept("abcdefg");
+
+        //Function的例子
+        Function<String, String> upperCase = String::toUpperCase;
+        Function<String, String> duplicate = s -> s.concat(s);
+        assertThat(upperCase.andThen(duplicate).apply("test"), is("TESTTEST"));
+
+        //Supplier的例子
+        Supplier<Integer> random = () -> new Random().nextInt();
+        System.out.println(random.get());
+
+        //BiFunction的例子
+        BiFunction<Integer, Integer, Integer> add = (a, b) -> a + b;
+        BiFunction<Integer, Integer, Integer> subtraction = (a, b) -> a - b;
+        assertThat(subtraction.apply(add.apply(1, 2), 3), is(0));
+
+        //自定义functional interface的例子
+        ToDoubleBiFunction<Product, Integer> calcPrice = (product, quantity) -> product.getPrice() * quantity;
+        GenerateOrderItemFunction generateOrderItemFunction = (product, quantity) -> new OrderItem(product.getId(), product.getName(), product.getPrice(), quantity);
+        GenerateOrderFunction generateOrderFunction = (customer, product, quantity) ->
+        {
+            Order o = new Order();
+            o.setPlacedAt(LocalDateTime.now());
+            o.setOrderItemList(new ArrayList<>());
+            o.setCustomerName(customer.getName());
+            o.setCustomerId(customer.getId());
+            o.setTotalPrice(product.getPrice());
+            o.getOrderItemList().add(generateOrderItemFunction.generate(product, quantity));
+            o.setTotalPrice(calcPrice.applyAsDouble(product, quantity));
+            return o;
+        };
+
+        System.out.println(generateOrderFunction.generate(Customer.getData().get(0), Product.getData().get(0), 2));
     }
 }

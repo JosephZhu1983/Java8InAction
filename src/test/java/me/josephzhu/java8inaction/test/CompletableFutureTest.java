@@ -3,14 +3,10 @@ package me.josephzhu.java8inaction.test;
 
 import me.josephzhu.java8inaction.test.common.Functions;
 import org.apache.log4j.Logger;
-import org.jooq.lambda.Unchecked;
 import org.junit.Test;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -23,39 +19,37 @@ public class CompletableFutureTest
     @Test
     public void basic()
     {
-        CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(()->Functions.slowEcho.apply(1));
+        CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> Functions.slowEcho.apply(1));
 
         try
         {
             logger.info(completableFuture.getNow(-1));
             logger.info(completableFuture.get());
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
-            logger.error("错误",e);
+            logger.error("错误", e);
         }
     }
 
     @Test
     public void timeout()
     {
-        CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(()->Functions.slowEcho.apply(1));
+        CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> Functions.slowEcho.apply(1));
 
         try
         {
             logger.info(completableFuture.get(500, TimeUnit.MILLISECONDS));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
-            logger.error("错误",e);
+            logger.error("错误", e);
         }
     }
 
     @Test
     public void batch()
     {
-       IntStream.rangeClosed(1,10)
-                .mapToObj(i->CompletableFuture.supplyAsync(()->Functions.slowEcho.apply(1)).thenAccept(logger::info))
+        IntStream.rangeClosed(1, 10)
+                .mapToObj(i -> CompletableFuture.supplyAsync(() -> Functions.slowEcho.apply(1)).thenAccept(logger::info))
                 .toArray();
 
     }

@@ -4,12 +4,21 @@ import me.josephzhu.java8inaction.test.common.Functions;
 import org.junit.Test;
 
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 /**
  * Created by zhuye on 27/12/2016.
  */
 public class ParallelStreamTest
 {
+    @Test
+    public void performanceTest()
+    {
+        System.out.println(Runtime.getRuntime().availableProcessors());
+        Functions.calcTime.accept("串行", () -> LongStream.rangeClosed(1, 1000000000L).mapToDouble(Math::sqrt).sum());
+        Functions.calcTime.accept("并行", () -> LongStream.rangeClosed(1, 1000000000L).parallel().mapToDouble(Math::sqrt).sum());
+    }
+
     @Test
     public void forEach()
     {
@@ -19,18 +28,17 @@ public class ParallelStreamTest
                 .parallel()
                 .forEach(Functions.slowPrint);
 
-        IntStream.rangeClosed(1, 10)
-                .parallel()
-                .sequential()
-                .parallel()
-                .forEach(i->Functions.doubleService.apply(i));
     }
 
     @Test
     public void parallelism()
     {
-        System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "10");
-        IntStream.rangeClosed(1, 10).parallel().forEach(Functions.slowPrint);
+        System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "8");
+        Functions.calcTime.accept("并行8并行度", () -> LongStream.rangeClosed(1, 1000000000L).mapToDouble(Math::sqrt).sum());
+
+        IntStream.rangeClosed(1, 10)
+                .parallel()
+                .forEach(Functions.slowPrint);
     }
 
     @Test
