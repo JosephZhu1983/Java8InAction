@@ -2,12 +2,14 @@ package me.josephzhu.java8inaction.test;
 
 
 import me.josephzhu.java8inaction.test.common.Functions;
+import me.josephzhu.java8inaction.test.model.Customer;
+import me.josephzhu.java8inaction.test.model.Order;
+import me.josephzhu.java8inaction.test.model.Product;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 /**
  * Created by zhuye on 26/12/2016.
@@ -46,11 +48,18 @@ public class CompletableFutureTest
     }
 
     @Test
-    public void batch()
+    public void chain()
     {
-        IntStream.rangeClosed(1, 10)
-                .mapToObj(i -> CompletableFuture.supplyAsync(() -> Functions.slowEcho.apply(1)).thenAccept(logger::info))
-                .toArray();
-
+        Functions.calcTime("下单链式操作", () ->
+        {
+            CompletableFuture.supplyAsync(() -> Customer.getRandomCustomer())
+                    .thenCombine(CompletableFuture.supplyAsync(() -> Product.getRandomProduct()),
+                            ((customer, product) ->
+                            {
+                                if (customer == null || product == null)
+                                    return null;
+                                return Order.placeOrder(customer, product);
+                            })).thenAccept(System.out::println).join();
+        });
     }
 }

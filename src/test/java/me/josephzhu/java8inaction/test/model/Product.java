@@ -2,9 +2,11 @@ package me.josephzhu.java8inaction.test.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by zhuye on 25/12/2016.
@@ -13,10 +15,24 @@ import java.util.List;
 @AllArgsConstructor
 public class Product
 {
+    private static Logger logger = Logger.getLogger(Product.class);
+    private static Random random = new Random();
     private Long id;
     private String name;
     private Double price;
 
+    public static Product getRandomProduct()
+    {
+        logger.info("queryProductById");
+        try
+        {
+            Thread.sleep(500);
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        return getData().get(random.ints(1, 0, getData().size()).findFirst().getAsInt());
+    }
     public static List<Product> getData()
     {
         return Arrays.asList(

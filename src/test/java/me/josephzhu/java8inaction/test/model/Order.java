@@ -1,10 +1,12 @@
 package me.josephzhu.java8inaction.test.model;
 
 import lombok.Data;
+import org.apache.log4j.Logger;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
@@ -16,12 +18,42 @@ import static java.util.stream.Collectors.toList;
 @Data
 public class Order
 {
+    private static AtomicLong al = new AtomicLong();
+    private static Logger logger = Logger.getLogger(Order.class);
     private Long id;
     private Long customerId;
     private String customerName;
     private List<OrderItem> orderItemList;
     private Double totalPrice;
     private LocalDateTime placedAt;
+
+    public static Order placeOrder(Customer customer, Product product)
+    {
+        logger.info("placeOrder");
+        try
+        {
+            Thread.sleep(1000);
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        Order order = new Order();
+        order.setId(al.incrementAndGet());
+        order.setOrderItemList(IntStream.rangeClosed(1, 1).mapToObj(j ->
+        {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProductId(product.getId());
+            orderItem.setProductName(product.getName());
+            orderItem.setProductPrice(product.getPrice());
+            orderItem.setProductQuantity(1);
+            return orderItem;
+        }).collect(toList()));
+        order.setTotalPrice(order.getOrderItemList().stream().mapToDouble(item -> item.getProductPrice() * item.getProductQuantity()).sum());
+
+        order.setCustomerId(customer.getId());
+        order.setCustomerName(customer.getName());
+        return order;
+    }
 
     public static List<Order> getData()
     {

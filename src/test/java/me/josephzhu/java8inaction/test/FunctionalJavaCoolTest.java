@@ -5,8 +5,12 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -20,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 public class FunctionalJavaCoolTest
 {
     private static Logger logger = Logger.getLogger(FunctionalJavaCoolTest.class);
-    private Map<Long, Product> cache = new HashMap<>();
+    private Map<Long, Product> cache = new ConcurrentHashMap<>();
 
     @Test
     public void lambdaCool()

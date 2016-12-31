@@ -66,6 +66,6 @@ public class Functions
     {
         Instant start = Instant.now();
         job.run();
-        System.out.println(String.format("执行【%s】耗时:%s", name, Duration.between(Instant.now(), start).toString()));
+        System.out.println(String.format("执行【%s】耗时:%d毫秒", name, Duration.between(start, Instant.now()).toMillis()));
     }
 }

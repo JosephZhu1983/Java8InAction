@@ -64,7 +64,7 @@ public class GenerateStreamTest
         System.out.println(IntStream.of(1, 2).asLongStream().toArray().getClass()); //class [J
 
         IntStream.range(1, 3).forEach(System.out::println);
-        IntStream.range(0, 10).mapToObj(i -> "x").forEach(System.out::println);
+        IntStream.range(0, 3).mapToObj(i -> "x").forEach(System.out::println);
 
         IntStream.rangeClosed(1, 3).forEach(System.out::println);
         DoubleStream.of(1.1, 2.2, 3.3).forEach(System.out::println);
