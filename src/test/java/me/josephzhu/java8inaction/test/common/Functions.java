@@ -1,7 +1,5 @@
 package me.josephzhu.java8inaction.test.common;
 
-import org.jooq.lambda.function.Consumer2;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -15,12 +13,6 @@ import java.util.function.IntFunction;
  */
 public class Functions
 {
-    public static Consumer2<String, Runnable> calcTime = (name, job) ->
-    {
-        Instant start = Instant.now();
-        job.run();
-        System.out.println(String.format("执行【%s】耗时:%s", name, Duration.between(Instant.now(), start).toString()));
-    };
     public static IntConsumer slowPrint = i ->
     {
         try
@@ -32,6 +24,7 @@ public class Functions
         }
         System.out.println(i);
     };
+    ;
     public static IntFunction<Integer> slowEcho = i ->
     {
         try
@@ -68,4 +61,11 @@ public class Functions
         int result = a * 2;
         return result;
     };
+
+    public static void calcTime(String name, Runnable job)
+    {
+        Instant start = Instant.now();
+        job.run();
+        System.out.println(String.format("执行【%s】耗时:%s", name, Duration.between(Instant.now(), start).toString()));
+    }
 }

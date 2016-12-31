@@ -1,5 +1,6 @@
 package me.josephzhu.java8inaction.test;
 
+import me.josephzhu.java8inaction.test.common.Functions;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -55,14 +56,41 @@ public class GenerateStreamTest
                 .mapToObj(i -> String.valueOf(i))
                 .collect(Collectors.joining(",")));
 
-        System.out.println(IntStream.of(1, 2).boxed().toArray().getClass());
-        System.out.println(IntStream.of(1, 2).toArray().getClass());
+        //转换
+        System.out.println(IntStream.of(1, 2).toArray().getClass()); //class [I
+        System.out.println(Stream.of(1, 2).mapToInt(Integer::intValue).toArray().getClass()); //class [I
+        System.out.println(IntStream.of(1, 2).boxed().toArray().getClass()); //class [Ljava.lang.Object;
+        System.out.println(IntStream.of(1, 2).asDoubleStream().toArray().getClass()); //class [D
+        System.out.println(IntStream.of(1, 2).asLongStream().toArray().getClass()); //class [J
 
         IntStream.range(1, 3).forEach(System.out::println);
         IntStream.range(0, 10).mapToObj(i -> "x").forEach(System.out::println);
 
         IntStream.rangeClosed(1, 3).forEach(System.out::println);
         DoubleStream.of(1.1, 2.2, 3.3).forEach(System.out::println);
+
+        //性能比较
+        Functions.calcTime("装箱拆箱", () ->
+        {
+            for (int k = 0; k < 10000000; k++)
+            {
+                Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).stream()
+                        .map(i -> i + 1)
+                        .max(Integer::max)
+                        .get();
+            }
+        });
+
+        Functions.calcTime("基本数据", () ->
+        {
+            for (int k = 0; k < 10000000; k++)
+            {
+                IntStream.rangeClosed(1, 10)
+                        .map(i -> i + 1)
+                        .max();
+            }
+        });
+
     }
 
     @Test

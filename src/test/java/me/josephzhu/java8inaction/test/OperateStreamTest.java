@@ -10,6 +10,7 @@ import me.josephzhu.java8inaction.test.model.Order;
 import me.josephzhu.java8inaction.test.model.OrderItem;
 import me.josephzhu.java8inaction.test.model.Product;
 import org.jooq.lambda.tuple.Tuple2;
+import org.jooq.lambda.tuple.Tuple3;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,25 +48,22 @@ public class OperateStreamTest
     @Test
     public void filter() //筛选
     {
-        //最近半年的金额大于40的订单
+        System.out.println("//最近半年的金额大于40的订单");
         orders.stream()
                 .filter(order -> order.getPlacedAt().isAfter(LocalDateTime.now().minusMonths(6)))
-                .filter(order -> order.getTotalPrice() > 40).forEach(System.out::println);
+                .filter(order -> order.getTotalPrice() > 40)
+                .map(order -> new Tuple3<>(order.getId(), order.getPlacedAt(), order.getTotalPrice()))
+                .forEach(System.out::println);
     }
 
     @Test
     public void map() //转换
     {
-        //for-each进行列表转换完全可以通过map()进行
-
-        orders.stream()
-                .map(order -> new Tuple2<>(order.getCustomerName(), order.getTotalPrice()))
-                .forEach(System.out::println);
-
         //计算所有订单商品数量
 
         LongAdder longAdder = new LongAdder();
-        orders.stream().forEach(order -> order.getOrderItemList().forEach(orderItem -> longAdder.add(orderItem.getProductQuantity())));
+        orders.stream().forEach(order ->
+                order.getOrderItemList().forEach(orderItem -> longAdder.add(orderItem.getProductQuantity())));
 
         assertThat(longAdder.longValue(), is(orders.stream().mapToLong(order ->
                 order.getOrderItemList().stream()
@@ -76,7 +74,7 @@ public class OperateStreamTest
         int count = orders.stream().collect(summingInt(order -> order.getOrderItemList().size()));
         System.out.println(String.format("总共%d条记录每次处理%d条", count, BATCH));
 
-        IntStream.range(0, (count + BATCH - 1) / BATCH)
+        IntStream.rangeClosed(0, count / BATCH)
                 .mapToObj(i -> orders.stream().flatMap(o -> o.getOrderItemList().stream()).collect(toList())
                         .subList(i * BATCH, Math.min(count, (i + 1) * BATCH)))
                 .forEach(Functions.slowPrintList);
@@ -85,19 +83,18 @@ public class OperateStreamTest
     @Test
     public void sort() //排序
     {
-        //大于50的订单,按照订单价格倒序前5
+        System.out.println("//大于50的订单,按照订单价格倒序前5");
         orders.stream().filter(order -> order.getTotalPrice() > 20)
                 .sorted((a, b) -> b.getTotalPrice().compareTo(a.getTotalPrice()))
-                .map(order -> new Tuple2(order.getCustomerName(), order.getTotalPrice()))
+                .map(order -> new Tuple2(order.getId(), order.getTotalPrice()))
                 .limit(5)
                 .forEach(System.out::println);
 
         System.out.println("******");
 
-        //大于50的订单,按照订单价格倒序前5
         orders.stream().filter(order -> order.getTotalPrice() > 20)
                 .sorted(comparing(Order::getTotalPrice).reversed())
-                .map(order -> new Tuple2(order.getCustomerName(), order.getTotalPrice()))
+                .map(order -> new Tuple2(order.getId(), order.getTotalPrice()))
                 .limit(5)
                 .forEach(System.out::println);
     }
@@ -110,12 +107,17 @@ public class OperateStreamTest
         System.out.println(orders.stream()
                 .flatMap(order -> order.getOrderItemList().stream())
                 .mapToDouble(item -> item.getProductQuantity() * item.getProductPrice()).sum());
+        System.out.println(orders.stream()
+                .flatMapToDouble(order ->
+                        order.getOrderItemList()
+                                .stream().mapToDouble(item -> item.getProductQuantity() * item.getProductPrice()))
+                .sum());
     }
 
     @Test
     public void groupBy() //分组
     {
-        //按照下单日期分组
+        System.out.println("//按照下单日期分组");
         System.out.println(orders.stream().map(order -> new Tuple2<>(order.getId(), order.getPlacedAt()))
                 .collect(groupingBy(order ->
                 {
@@ -129,47 +131,50 @@ public class OperateStreamTest
                     return "其他";
                 })));
 
-        //按照用户名分组,统计下单数量
+        System.out.println("//按照用户名分组,统计下单数量");
         System.out.println(orders.stream().collect(groupingBy(Order::getCustomerName, counting()))
                 .entrySet().stream().sorted(Map.Entry.<String, Long>comparingByValue().reversed()).collect(toList()));
 
-        //按照用户名分组,统计订单总金额
+        System.out.println("//按照用户名分组,统计订单总金额");
         System.out.println(orders.stream().collect(groupingBy(Order::getCustomerName, summingDouble(Order::getTotalPrice)))
                 .entrySet().stream().sorted(Map.Entry.<String, Double>comparingByValue().reversed()).collect(toList()));
 
-        //按照用户名分组,统计商品采购数量
+        System.out.println("//按照用户名分组,统计商品采购数量");
         System.out.println(orders.stream().collect(groupingBy(Order::getCustomerName,
                 summingInt(order -> order.getOrderItemList().stream()
                         .collect(summingInt(OrderItem::getProductQuantity)))))
                 .entrySet().stream().sorted(Map.Entry.<String, Integer>comparingByValue().reversed()).collect(toList()));
 
-
-        //统计最受欢迎的水果
+        System.out.println("//统计最受欢迎的水果");
         orders.stream()
                 .flatMap(order -> order.getOrderItemList().stream())
                 .collect(groupingBy(OrderItem::getProductName, summingInt(OrderItem::getProductQuantity)))
-                .entrySet().stream().sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .entrySet().stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
                 .findFirst()
                 .ifPresent(System.out::println);
 
-        //统计最受欢迎的水果的另一种方式
+        System.out.println("//统计最受欢迎的水果的另一种方式");
         orders.stream()
                 .flatMap(order -> order.getOrderItemList().stream())
                 .collect(groupingBy(OrderItem::getProductName, summingInt(OrderItem::getProductQuantity)))
-                .entrySet().stream().collect(maxBy(Map.Entry.comparingByValue()))
+                .entrySet().stream()
+                .collect(maxBy(Map.Entry.comparingByValue()))
+                .map(Map.Entry::getKey)
                 .ifPresent(System.out::println);
 
 
-        //按照用户名分组,选用户下的最大的订单
+        System.out.println("//按照用户名分组,选用户下的最大的订单");
         orders.stream().collect(groupingBy(Order::getCustomerName, collectingAndThen(maxBy(comparingDouble(Order::getTotalPrice)), Optional::get)))
                 .forEach((k, v) -> System.out.println(k + "#" + v.getTotalPrice() + "@" + v.getPlacedAt()));
 
-        //根据下单年月分组统计订单ID列表
+        System.out.println("//根据下单年月分组统计订单ID列表");
         System.out.println(orders.stream().collect
                 (groupingBy(order -> order.getPlacedAt().format(DateTimeFormatter.ofPattern("yyyyMM")),
                         mapping(order -> order.getId(), toList()))));
 
-        //根据下单年月+用户名分组统计订单ID列表
+        System.out.println("//根据下单年月+用户名分组统计订单ID列表");
         System.out.println(orders.stream().collect
                 (groupingBy(order -> order.getPlacedAt().format(DateTimeFormatter.ofPattern("yyyyMM")),
                         groupingBy(order -> order.getCustomerName(),
@@ -186,23 +191,23 @@ public class OperateStreamTest
     @Test
     public void reduce() //规约
     {
-        //订单的总金额
+        System.out.println("//订单的总金额");
         orders.stream()
                 .map(Order::getTotalPrice)
                 .reduce(Double::sum)
                 .ifPresent(System.out::println);
 
-        //不用reduce的方法
+        System.out.println("//不用reduce的方法");
         System.out.println(orders.stream()
                 .mapToDouble(Order::getTotalPrice).sum());
 
-        //统计花钱最多的人
+        System.out.println("//统计花钱最多的人");
         System.out.println(orders.stream().collect(groupingBy(Order::getCustomerName, summingDouble(Order::getTotalPrice)))
                 .entrySet().stream()
-                .reduce((a, b) -> a.getValue() > b.getValue() ? a : b)
+                .reduce(BinaryOperator.maxBy(Map.Entry.comparingByValue()))
                 .map(Map.Entry::getKey).orElse("N/A"));
 
-        //获取最后一个数
+        System.out.println("//获取最后一个数");
         System.out.println(IntStream.rangeClosed(1, 10).reduce((a, b) -> b).orElse(0));
         System.out.println(Stream.empty().reduce((a, b) -> b).orElse(0));
 
@@ -211,24 +216,39 @@ public class OperateStreamTest
     @Test
     public void distinct() //去重
     {
-        //不去重的下单用户
+        System.out.println("//不去重的下单用户");
         System.out.println(orders.stream().map(order -> order.getCustomerName()).collect(joining(",")));
-        //去重的下单用户
+        System.out.println("//去重的下单用户");
         System.out.println(orders.stream().map(order -> order.getCustomerName()).distinct().collect(joining(",")));
+        System.out.println("//所有购买过的商品");
+        System.out.println(orders.stream()
+                .flatMap(order -> order.getOrderItemList().stream())
+                .map(OrderItem::getProductName)
+                .distinct().collect(joining(",")));
     }
 
     @Test
     public void collect() //收集
     {
-        //用toSet收集器进行去重,然后组合
+        System.out.println("//所有下单的用户,使用toSet去重了");
         System.out.println(orders.stream()
                 .map(order -> order.getCustomerName()).collect(toSet())
                 .stream().collect(joining(",", "[", "]")));
 
-        //用toCollection收集器指定集合类型
+        System.out.println("//用toCollection收集器指定集合类型");
         System.out.println(orders.stream().limit(2).collect(toCollection(LinkedList::new)).getClass());
 
-        //订单平均购买的商品数量
+        System.out.println("//使用toMap获取订单ID+下单用户名的Map");
+        orders.stream()
+                .collect(toMap(Order::getId, Order::getCustomerName))
+                .entrySet().forEach(System.out::println);
+
+        System.out.println("//使用toMap获取下单用户名+最近一次下单时间的Map");
+        orders.stream()
+                .collect(toMap(Order::getCustomerName, Order::getPlacedAt, (x, y) -> x.isAfter(y) ? x : y))
+                .entrySet().forEach(System.out::println);
+
+        System.out.println("//订单平均购买的商品数量");
         System.out.println(orders.stream().collect(averagingInt(order ->
                 order.getOrderItemList().stream()
                         .collect(summingInt(OrderItem::getProductQuantity)))));

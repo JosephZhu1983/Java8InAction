@@ -15,8 +15,8 @@ public class ParallelStreamTest
     public void performanceTest()
     {
         System.out.println(Runtime.getRuntime().availableProcessors());
-        Functions.calcTime.accept("串行", () -> LongStream.rangeClosed(1, 1000000000L).mapToDouble(Math::sqrt).sum());
-        Functions.calcTime.accept("并行", () -> LongStream.rangeClosed(1, 1000000000L).parallel().mapToDouble(Math::sqrt).sum());
+        Functions.calcTime("串行", () -> LongStream.rangeClosed(1, 1000000000L).mapToDouble(Math::sqrt).sum());
+        Functions.calcTime("并行", () -> LongStream.rangeClosed(1, 1000000000L).parallel().mapToDouble(Math::sqrt).sum());
     }
 
     @Test
@@ -34,7 +34,7 @@ public class ParallelStreamTest
     public void parallelism()
     {
         System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "8");
-        Functions.calcTime.accept("并行8并行度", () -> LongStream.rangeClosed(1, 1000000000L).mapToDouble(Math::sqrt).sum());
+        Functions.calcTime("并行8并行度", () -> LongStream.rangeClosed(1, 1000000000L).mapToDouble(Math::sqrt).sum());
 
         IntStream.rangeClosed(1, 10)
                 .parallel()
