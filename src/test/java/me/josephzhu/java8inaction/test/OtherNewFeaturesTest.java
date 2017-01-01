@@ -214,12 +214,6 @@ public class OtherNewFeaturesTest
     }
 
     @Test
-    public void checker()
-    {
-
-    }
-
-    @Test
     public void miscImprovements()
     {
 

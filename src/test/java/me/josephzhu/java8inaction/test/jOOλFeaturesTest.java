@@ -45,43 +45,51 @@ public class jOOλFeaturesTest
         assertArrayEquals(Seq.of(1, 2, 3, 4).intersperse(0).toArray(),
                 Seq.of(1, 0, 2, 0, 3, 0, 4).toArray());
 
-        Seq.of(1, 2, 3, 4, 5).limitWhile(i -> i < 3);
+        assertArrayEquals(Seq.of(1, 2, 3, 4, 5).limitWhile(i -> i < 3).toArray(),
+                Seq.of(1, 2).toArray());
 
-        Seq.of(1, 2, 3, 4, 5).skipUntil(i -> i == 3);
+        assertArrayEquals(Seq.of(1, 2, 3, 4, 5).skipUntil(i -> i == 3).toArray(),
+                Seq.of(3, 4, 5).toArray());
 
-        Seq.of(new Object(), 1, "B", 2L).ofType(Number.class);
+        assertArrayEquals(Seq.of(new Object(), 1, "B", 2L).ofType(Number.class).toArray(),
+                Seq.of(1, 2L).toArray());
 
-        Seq.of(1, 2, 4).rightOuterJoin(Seq.of(1, 2, 3), (a, b) -> a == b);
+        assertArrayEquals(Seq.of(1, 2, 3, 4).remove(2).toArray(),
+                Seq.of(1, 3, 4).toArray());
 
-        Seq.of(1, 2, 3, 4).partition(i -> i % 2 != 0);
+        assertArrayEquals(Seq.of(1, 2, 3, 4).removeAll(2, 3, 5).toArray(),
+                Seq.of(1, 4).toArray());
 
-        Seq.of(1, 2, 3, 4).remove(2);
+        assertArrayEquals(Seq.of(1, 2, 3, 4).retainAll(2, 3, 5).toArray(),
+                Seq.of(2, 3).toArray());
 
-        Seq.of(1, 2, 3, 4).removeAll(2, 3, 5);
+        assertArrayEquals(Seq.of(1, 2, 3, 4).reverse().toArray(),
+                Seq.of(4, 3, 2, 1).toArray());
 
-        Seq.of(1, 2, 3, 4).retainAll(2, 3, 5);
+        assertArrayEquals(Seq.of(1, 2, 3, 4, 5).skipWhile(i -> i < 3).toArray(),
+                Seq.of(3, 4, 5).toArray());
 
-        Seq.of(1, 2, 3, 4).reverse();
+        assertArrayEquals(Seq.of(1, 2, 3, 4, 5).skipUntil(i -> i == 3).toArray(),
+                Seq.of(3, 4, 5).toArray());
 
-        Seq.of(1, 2, 3, 4, 5).shuffle();
+        assertArrayEquals(Seq.of(1, 2, 3, 4, 5).slice(1, 3).toArray(),
+                Seq.of(2, 3).toArray());
 
-        Seq.of(1, 2, 3, 4, 5).skipWhile(i -> i < 3);
+        System.out.println(Seq.of(1, 2, 3, 4, 5).shuffle());
 
-        Seq.of(1, 2, 3, 4, 5).skipUntil(i -> i == 3);
+        System.out.println(Seq.of(1, 2, 3, 4, 5).splitAt(2));
 
-        Seq.of(1, 2, 3, 4, 5).slice(1, 3);
+        System.out.println(Seq.of(1, 2, 3, 4, 5).splitAtHead());
 
-        Seq.of(1, 2, 3, 4, 5).splitAt(2);
+        System.out.println(Seq.of(1, 2, 3, 4).partition(i -> i % 2 != 0));
 
-        Seq.of(1, 2, 3, 4, 5).splitAtHead();
+        System.out.println(Seq.unzip(Seq.of(new Tuple2(1, "a"), new Tuple2(2, "b"), new Tuple2(3, "c"))));
 
-        Seq.unzip(Seq.of(new Tuple2(1, "a"), new Tuple2(2, "b"), new Tuple2(3, "c")));
+        System.out.println(Seq.of(1, 2, 3).zip(Seq.of("a", "b", "c")));
 
-        Seq.of(1, 2, 3).zip(Seq.of("a", "b", "c"));
+        System.out.println(Seq.of(1, 2, 3).zip(Seq.of("a", "b", "c"), (x, y) -> x + ":" + y + " "));
 
-        Seq.of(1, 2, 3).zip(Seq.of("a", "b", "c"), (x, y) -> x + ":" + y);
-
-        Seq.of("a", "b", "c").zipWithIndex();
+        System.out.println(Seq.of("a", "b", "c").zipWithIndex());
     }
 
     @Test
