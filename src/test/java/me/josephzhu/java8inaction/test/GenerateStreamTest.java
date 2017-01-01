@@ -69,6 +69,15 @@ public class GenerateStreamTest
 
         IntStream.rangeClosed(1, 3).forEach(System.out::println);
         DoubleStream.of(1.1, 2.2, 3.3).forEach(System.out::println);
+
+        Arrays.asList("a", "b", "c").stream()   // Stream<String>
+                .mapToInt(String::length)       // IntStream
+                .asLongStream()                 // LongStream
+                .mapToDouble(x -> x / 10.0)     // DoubleStream
+                .boxed()                        // Stream<Double>
+                .mapToLong(x -> 1L)             // LongStream
+                .mapToObj(x -> "")              // Stream<String>
+                .collect(Collectors.toList());
     }
 
     @Test

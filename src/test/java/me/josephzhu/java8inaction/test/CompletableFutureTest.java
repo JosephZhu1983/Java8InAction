@@ -107,6 +107,13 @@ public class CompletableFutureTest
     @Test
     public void chain() //链式异步操作
     {
+        Functions.calcTime("三种执行方式", () ->
+        {
+            CompletableFuture.completedFuture(1).thenAccept(logger::info).join();
+            CompletableFuture.completedFuture(1).thenAcceptAsync(logger::info).join();
+            CompletableFuture.completedFuture(1).thenAcceptAsync(logger::info, executors).join();
+        });
+
         Functions.calcTime("acceptEither的例子", () ->
                 doubleService(1).acceptEither(doubleService(2), logger::info).join());
 

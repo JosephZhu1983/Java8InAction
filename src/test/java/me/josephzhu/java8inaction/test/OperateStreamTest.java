@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class OperateStreamTest
 {
+    private static Random random = new Random();
     private List<Order> orders;
 
     @Before
@@ -284,6 +285,14 @@ public class OperateStreamTest
     @Test
     public void collect() //收集
     {
+        System.out.println("//随机字符串");
+        System.out.println(random.ints(48, 122)
+                .filter(i -> (i < 57 || i > 65) && (i < 90 || i > 97))
+                .mapToObj(i -> (char) i)
+                .limit(20)
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString());
+
         System.out.println("//所有下单的用户,使用toSet去重了");
         System.out.println(orders.stream()
                 .map(order -> order.getCustomerName()).collect(toSet())

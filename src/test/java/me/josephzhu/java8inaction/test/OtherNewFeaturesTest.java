@@ -3,6 +3,7 @@ package me.josephzhu.java8inaction.test;
 import me.josephzhu.java8inaction.test.model.Filter;
 import me.josephzhu.java8inaction.test.model.FilterA;
 import me.josephzhu.java8inaction.test.model.FilterB;
+import me.josephzhu.java8inaction.test.model.Product;
 import org.jooq.lambda.Unchecked;
 import org.junit.Test;
 
@@ -17,6 +18,7 @@ import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.counting;
 import static org.hamcrest.CoreMatchers.is;
@@ -29,6 +31,8 @@ import static org.junit.Assert.assertThat;
  */
 public class OtherNewFeaturesTest
 {
+    private ThreadLocal<List<String>> listThreadLocal = ThreadLocal.withInitial(ArrayList::new);
+
     @Test
     public void defaultMethods() //默认方法,为什么引入?
     {
@@ -215,6 +219,20 @@ public class OtherNewFeaturesTest
         Arrays.stream(m.getAnnotationsByType(Filter.class))
                 .map(Unchecked.function(a -> a.value().newInstance()))
                 .forEach(c -> c.doWork());
+    }
+
+    @Test
+    public void miscFeatures()
+    {
+        //ThreadLocal初始化更简单了
+        listThreadLocal.get().add("a");
+        assertThat(listThreadLocal.get().get(0), is("a"));
+
+        //按照商品名和价格排序
+        Stream.of(new Product(1L, "bb", 1.0), new Product(2L, "aa", 2.0), new Product(3L, "bb", 2.0), new Product(4L, "bb", 1.5))
+                .sorted(Comparator.comparing(Product::getName)
+                        .thenComparingDouble(Product::getPrice))
+                .forEachOrdered(System.out::println);
     }
 
     interface IA
