@@ -37,14 +37,32 @@ public class CompletableFutureTest
     private Map<Long, FraudState> orders = new ConcurrentHashMap<>();
 
     @Test
-    public void basic()
+    public void basic() //基本使用
     {
-        CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> Functions.slowEcho.apply(1));
+        CompletableFuture<Integer> completableFuture1 = new CompletableFuture<>();
+        Future<Integer> future = executors.submit(() -> Functions.slowEcho.apply(1));
+        try
+        {
+            completableFuture1.complete(future.get());
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
         try
         {
-            logger.info(completableFuture.getNow(-1)); //一开始获取不到,用默认值
-            logger.info(completableFuture.get()); //等待并获取结果
+            logger.info(completableFuture1.get());
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        CompletableFuture<Integer> completableFuture2 = CompletableFuture.supplyAsync(() -> Functions.slowEcho.apply(1));
+
+        try
+        {
+            logger.info(completableFuture2.getNow(-1)); //一开始获取不到,用默认值
+            logger.info(completableFuture2.get()); //等待并获取结果
         } catch (Exception e)
         {
             logger.error("错误", e);
@@ -66,7 +84,7 @@ public class CompletableFutureTest
     }
 
     @Test
-    public void customThreadPool()
+    public void customThreadPool() //自定义线程池
     {
         Functions.calcTime("parallel", () ->
                 IntStream.rangeClosed(1, 10)
@@ -87,19 +105,27 @@ public class CompletableFutureTest
     }
 
     @Test
-    public void chain()
+    public void chain() //链式异步操作
     {
         Functions.calcTime("acceptEither的例子", () ->
                 CompletableFuture.supplyAsync(() -> Functions.doubleService.apply(1))
-                        .acceptEither(CompletableFuture.supplyAsync(() -> Functions.doubleService.apply(2)), System.out::println)
+                        .acceptEither(CompletableFuture.supplyAsync(() -> Functions.doubleService.apply(2)), logger::info)
+                        .join());
+
+        Functions.calcTime("thenCompose的例子", () ->
+                CompletableFuture.supplyAsync(() -> Functions.slowEcho.apply(1))
+                        .thenCompose(i -> CompletableFuture.supplyAsync(() -> Functions.doubleService.apply(i)))
+                        .whenComplete(logger::info)
                         .join());
 
         Functions.calcTime("thenCombine下单的例子", () ->
-            CompletableFuture.supplyAsync(() -> Customer.getRandomCustomer())
-                    .thenCombine(CompletableFuture.supplyAsync(() -> Product.getRandomProduct()),
-                            ((customer, product) -> Order.placeOrder(customer, product)))
-                    .thenAccept(System.out::println)
-                    .join());
+                CompletableFuture.supplyAsync(() -> Customer.getRandomCustomer())
+                        .thenCombine(CompletableFuture.supplyAsync(() -> Product.getRandomProduct()),
+                                ((customer, product) -> Order.placeOrder(customer, product)))
+                        .thenAccept(logger::info)
+                        .join());
+
+
     }
 
     @Before

@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
@@ -68,8 +69,11 @@ public class GenerateStreamTest
 
         IntStream.rangeClosed(1, 3).forEach(System.out::println);
         DoubleStream.of(1.1, 2.2, 3.3).forEach(System.out::println);
+    }
 
-        //性能比较
+    @Test
+    public void primitiveStreamPerformanceBenchmark() //性能测试
+    {
         Functions.calcTime("装箱拆箱", () ->
         {
             for (int k = 0; k < 10000000; k++)
@@ -90,7 +94,6 @@ public class GenerateStreamTest
                         .max();
             }
         });
-
     }
 
     @Test
@@ -103,11 +106,11 @@ public class GenerateStreamTest
     @Test
     public void files() throws IOException
     {
-        Files.list(Paths.get("/Users/zhuye/Downloads"))
-                .limit(10)
+        Files.walk(Paths.get("/Users/zhuye/Downloads"), 2)
+                .limit(100)
                 .map(String::valueOf)
                 .filter(path -> !path.startsWith("."))
-                .sorted()
+                .sorted(Comparator.reverseOrder())
                 .forEach(System.out::println);
     }
 }

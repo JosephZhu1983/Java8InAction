@@ -112,7 +112,53 @@ public class OtherNewFeaturesTest
         Optional.empty().orElseThrow(IllegalArgumentException::new);
     }
 
+    @Test
+    public void optionalCool()
+    {
+        Map<String, String> properties = new HashMap<>();
+        properties.put("a", "1");
+        properties.put("b", "b");
+        properties.put("c", "-1");
+        assertThat(readPositiveNumberCool(properties, "a"), is(readPositiveNumber(properties, "a")));
+        assertThat(readPositiveNumberCool(properties, "b"), is(readPositiveNumber(properties, "b")));
+        assertThat(readPositiveNumberCool(properties, "b"), is(readPositiveNumber(properties, "b")));
+    }
 
+    private int readPositiveNumber(Map<String, String> properties, String name)
+    {
+        String value = properties.get(name);
+        if (value != null)
+        {
+            try
+            {
+                Integer integer = Integer.parseInt(value);
+                if (integer > 0)
+                    return integer;
+            } catch (NumberFormatException ex)
+            {
+            }
+        }
+        return 0;
+    }
+
+    private int readPositiveNumberCool(Map<String, String> properties, String name)
+    {
+        return Optional.ofNullable(properties.get(name))
+                .flatMap(this::parseInt)
+                .filter(i -> i > 0)
+                .orElse(0);
+    }
+
+    private Optional<Integer> parseInt(String s)
+    {
+        try
+        {
+            return Optional.of(Integer.parseInt(s));
+        } catch (NumberFormatException ex)
+        {
+            return Optional.empty();
+        }
+    }
 
     @Test
     public void map() //map的新增方法

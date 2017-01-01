@@ -12,7 +12,7 @@ import java.util.stream.LongStream;
 public class ParallelStreamTest
 {
     @Test
-    public void performanceTest()
+    public void performanceTest() //串行和并行的性能测试
     {
         System.out.println(Runtime.getRuntime().availableProcessors());
         Functions.calcTime("串行", () -> LongStream.rangeClosed(1, 1000000000L).mapToDouble(Math::sqrt).sum());
@@ -31,7 +31,7 @@ public class ParallelStreamTest
     }
 
     @Test
-    public void parallelism()
+    public void parallelism() //修改并行度
     {
         System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "8");
         Functions.calcTime("并行8并行度", () -> LongStream.rangeClosed(1, 1000000000L).mapToDouble(Math::sqrt).sum());

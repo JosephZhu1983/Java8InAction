@@ -33,6 +33,7 @@ public class Product
         }
         return getData().get(random.ints(1, 0, getData().size()).findFirst().getAsInt());
     }
+
     public static List<Product> getData()
     {
         return Arrays.asList(
