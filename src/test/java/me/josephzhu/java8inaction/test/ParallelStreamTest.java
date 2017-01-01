@@ -3,6 +3,7 @@ package me.josephzhu.java8inaction.test;
 import me.josephzhu.java8inaction.test.common.Functions;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
@@ -20,13 +21,17 @@ public class ParallelStreamTest
     }
 
     @Test
-    public void forEach()
+    public void parallel()
     {
         IntStream.rangeClosed(1, 10)
                 .parallel()
                 .sequential()
-                .parallel()
+                .parallel() //以最后的为准
                 .forEach(Functions.slowPrint);
+
+        Arrays.asList("a1", "a2", "a3")
+                .parallelStream()
+                .forEach(System.out::println);
 
     }
 

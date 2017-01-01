@@ -217,12 +217,6 @@ public class OtherNewFeaturesTest
                 .forEach(c -> c.doWork());
     }
 
-    @Test
-    public void miscImprovements()
-    {
-
-    }
-
     interface IA
     {
         default String getName()
