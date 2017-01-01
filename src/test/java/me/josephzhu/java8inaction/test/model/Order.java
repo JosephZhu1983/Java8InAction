@@ -30,6 +30,8 @@ public class Order
     public static Order placeOrder(Customer customer, Product product)
     {
         logger.info("placeOrder");
+        if (customer == null || product == null)
+            return null;
         try
         {
             Thread.sleep(1000);

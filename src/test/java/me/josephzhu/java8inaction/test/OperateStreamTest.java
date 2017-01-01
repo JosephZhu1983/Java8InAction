@@ -45,6 +45,58 @@ public class OperateStreamTest
         System.out.println("==========================================");
     }
 
+
+    @Test
+    public void functionalInterfaces()
+    {
+        //可以看一下java.util.function包
+        Supplier<String> supplier = String::new;
+        Consumer<String> consumer = System.out::println;
+        Predicate<String> predicate = String::isEmpty;
+        Function<String, Integer> function = Integer::valueOf;
+
+        //Predicate的例子
+        Predicate<Integer> positiveNumber = i -> i > 0;
+        Predicate<Integer> evenNumber = i -> i % 2 == 0;
+        assertTrue(positiveNumber.and(evenNumber).test(2));
+
+        //Consumer的例子
+        Consumer<String> println = System.out::println;
+        println.andThen(println).accept("abcdefg");
+
+        //Function的例子
+        Function<String, String> upperCase = String::toUpperCase;
+        Function<String, String> duplicate = s -> s.concat(s);
+        assertThat(upperCase.andThen(duplicate).apply("test"), is("TESTTEST"));
+
+        //Supplier的例子
+        Supplier<Integer> random = () -> new Random().nextInt();
+        System.out.println(random.get());
+
+        //BiFunction的例子
+        BiFunction<Integer, Integer, Integer> add = (a, b) -> a + b;
+        BiFunction<Integer, Integer, Integer> subtraction = (a, b) -> a - b;
+        assertThat(subtraction.apply(add.apply(1, 2), 3), is(0));
+
+        //自定义functional interface的例子
+        ToDoubleBiFunction<Product, Integer> calcPrice = (product, quantity) -> product.getPrice() * quantity;
+        GenerateOrderItemFunction generateOrderItemFunction = (product, quantity) -> new OrderItem(product.getId(), product.getName(), product.getPrice(), quantity);
+        GenerateOrderFunction generateOrderFunction = (customer, product, quantity) ->
+        {
+            Order o = new Order();
+            o.setPlacedAt(LocalDateTime.now());
+            o.setOrderItemList(new ArrayList<>());
+            o.setCustomerName(customer.getName());
+            o.setCustomerId(customer.getId());
+            o.setTotalPrice(product.getPrice());
+            o.getOrderItemList().add(generateOrderItemFunction.generate(product, quantity));
+            o.setTotalPrice(calcPrice.applyAsDouble(product, quantity));
+            return o;
+        };
+
+        System.out.println(generateOrderFunction.generate(Customer.getData().get(0), Product.getData().get(0), 2));
+    }
+
     @Test
     public void filter() //筛选
     {
@@ -304,54 +356,4 @@ public class OperateStreamTest
                 .collect(toList());
     }
 
-    @Test
-    public void functionalInterfaces()
-    {
-        //可以看一下java.util.function包
-        Supplier<String> supplier = String::new;
-        Consumer<String> consumer = System.out::println;
-        Predicate<String> predicate = String::isEmpty;
-        Function<String, Integer> function = Integer::valueOf;
-
-        //Predicate的例子
-        Predicate<Integer> positiveNumber = i -> i > 0;
-        Predicate<Integer> evenNumber = i -> i % 2 == 0;
-        assertTrue(positiveNumber.and(evenNumber).test(2));
-
-        //Consumer的例子
-        Consumer<String> println = System.out::println;
-        println.andThen(println).accept("abcdefg");
-
-        //Function的例子
-        Function<String, String> upperCase = String::toUpperCase;
-        Function<String, String> duplicate = s -> s.concat(s);
-        assertThat(upperCase.andThen(duplicate).apply("test"), is("TESTTEST"));
-
-        //Supplier的例子
-        Supplier<Integer> random = () -> new Random().nextInt();
-        System.out.println(random.get());
-
-        //BiFunction的例子
-        BiFunction<Integer, Integer, Integer> add = (a, b) -> a + b;
-        BiFunction<Integer, Integer, Integer> subtraction = (a, b) -> a - b;
-        assertThat(subtraction.apply(add.apply(1, 2), 3), is(0));
-
-        //自定义functional interface的例子
-        ToDoubleBiFunction<Product, Integer> calcPrice = (product, quantity) -> product.getPrice() * quantity;
-        GenerateOrderItemFunction generateOrderItemFunction = (product, quantity) -> new OrderItem(product.getId(), product.getName(), product.getPrice(), quantity);
-        GenerateOrderFunction generateOrderFunction = (customer, product, quantity) ->
-        {
-            Order o = new Order();
-            o.setPlacedAt(LocalDateTime.now());
-            o.setOrderItemList(new ArrayList<>());
-            o.setCustomerName(customer.getName());
-            o.setCustomerId(customer.getId());
-            o.setTotalPrice(product.getPrice());
-            o.getOrderItemList().add(generateOrderItemFunction.generate(product, quantity));
-            o.setTotalPrice(calcPrice.applyAsDouble(product, quantity));
-            return o;
-        };
-
-        System.out.println(generateOrderFunction.generate(Customer.getData().get(0), Product.getData().get(0), 2));
-    }
 }

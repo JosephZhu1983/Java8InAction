@@ -45,14 +45,20 @@ public class BatchCollector<T> implements Collector<T, List<T>, List<T>>
 
     public BinaryOperator<List<T>> combiner()
     {
-        return null;
+        return (ts, ots) ->
+        {
+            batchProcessor.accept(ts);
+            batchProcessor.accept(ots);
+            return Collections.emptyList();
+        };
     }
 
     public Function<List<T>, List<T>> finisher()
     {
         return ts ->
         {
-            batchProcessor.accept(ts);
+            if (ts.size() > 0)
+                batchProcessor.accept(ts);
             return Collections.emptyList();
         };
     }

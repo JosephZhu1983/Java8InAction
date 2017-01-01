@@ -150,8 +150,6 @@ public class OtherNewFeaturesTest
         la.add(10);
         la.add(5);
         assertThat(la.intValue(), is(15));
-
-
     }
 
     @Test
@@ -170,13 +168,13 @@ public class OtherNewFeaturesTest
     }
 
     @Test
-    public void miscImprovements()
+    public void checker()
     {
 
     }
 
     @Test
-    public void checker()
+    public void miscImprovements()
     {
 
     }

@@ -29,7 +29,7 @@ public class Functions
     {
         try
         {
-            Thread.sleep(i * 1000);
+            Thread.sleep(1000);
         } catch (InterruptedException e)
         {
             e.printStackTrace();
