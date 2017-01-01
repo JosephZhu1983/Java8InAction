@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -165,17 +163,5 @@ public class FunctionalJavaCoolTest
             e.printStackTrace();
         }
         return "slow";
-    }
-
-    @Test
-    public void highOrderFunction() throws Exception // 高阶函数
-    {
-        //返回一个函数的函数
-        Callable<Runnable> test = () -> () -> System.out.println("hi");
-        test.call().run();
-
-        //输入一个函数,返回这个函数执行两次的函数
-        Function<Function<Integer, Integer>, Function<Integer, Integer>> twice = f -> f.andThen(f);
-        assertThat(twice.apply(x -> x + 3).apply(7), is(13));
     }
 }

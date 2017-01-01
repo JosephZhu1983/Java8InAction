@@ -1,15 +1,16 @@
 package me.josephzhu.java8inaction.test;
 
 import me.josephzhu.java8inaction.test.common.Functions;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -20,6 +21,8 @@ import java.util.stream.Stream;
  */
 public class GenerateStreamTest
 {
+    private static Logger logger = Logger.getLogger(GenerateStreamTest.class);
+
     @Test
     public void of()
     {
@@ -113,7 +116,7 @@ public class GenerateStreamTest
     }
 
     @Test
-    public void files() throws IOException
+    public void filesBasic() throws IOException
     {
         Files.walk(Paths.get("/Users/zhuye/Downloads"), 2)
                 .limit(100)
@@ -121,5 +124,33 @@ public class GenerateStreamTest
                 .filter(path -> !path.startsWith("."))
                 .sorted(Comparator.reverseOrder())
                 .forEach(System.out::println);
+    }
+
+
+    @Test
+    public void grepContentFromFileExample() throws IOException
+    {
+        Pattern pattern = Pattern.compile("class");
+        PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.java");
+        try (Stream<Path> pathStream = Files.walk(Paths.get(".")))
+        {
+            pathStream.filter(Files::isRegularFile)
+                    .filter(pathMatcher::matches)
+                    .flatMap(path ->
+                    {
+                        try
+                        {
+                            return Files.readAllLines(path).stream()
+                                    .filter(line -> pattern.matcher(line).find())
+                                    .map(line -> path + ":" + line);
+                        } catch (IOException e)
+                        {
+                            e.printStackTrace();
+                            return Stream.of("");
+                        }
+                    })
+                    .filter(line -> !line.isEmpty())
+                    .forEach(logger::info);
+        }
     }
 }

@@ -17,6 +17,7 @@ import org.junit.Test;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.*;
 import java.util.stream.IntStream;
@@ -96,6 +97,18 @@ public class OperateStreamTest
         };
 
         System.out.println(generateOrderFunction.generate(Customer.getData().get(0), Product.getData().get(0), 2));
+    }
+
+    @Test
+    public void highOrderFunction() throws Exception // 高阶函数
+    {
+        //返回一个函数的函数
+        Callable<Runnable> test = () -> () -> System.out.println("hi");
+        test.call().run();
+
+        //输入一个函数,返回这个函数执行两次的函数
+        Function<Function<Integer, Integer>, Function<Integer, Integer>> twice = f -> f.andThen(f);
+        assertThat(twice.apply(x -> x + 3).apply(7), is(13));
     }
 
     @Test
@@ -366,5 +379,4 @@ public class OperateStreamTest
                 .peek(order -> System.out.println(order.getTotalPrice()))
                 .collect(toList());
     }
-
 }

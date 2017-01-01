@@ -18,9 +18,12 @@ import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertFalse;
@@ -233,6 +236,28 @@ public class OtherNewFeaturesTest
                 .sorted(Comparator.comparing(Product::getName)
                         .thenComparingDouble(Product::getPrice))
                 .forEachOrdered(System.out::println);
+    }
+
+    @Test
+    public void testMovingAverage()
+    {
+        System.out.println(
+                DoubleStream.of(movingAverage(new double[]{0, 1, 2, 3, 4, 3.5}, 3))
+                        .boxed().map(String::valueOf).collect(joining(",")));
+    }
+
+    private double[] movingAverage(double[] list, int window)
+    {
+        double[] sums = Arrays.copyOf(list, list.length);
+        Arrays.parallelPrefix(sums, Double::sum);
+        System.out.println(DoubleStream.of(sums).boxed().map(String::valueOf).collect(joining(",")));
+        int start = window - 1;
+        return IntStream.range(start, sums.length)
+                .mapToDouble(i ->
+                {
+                    double prefix = i == start ? 0 : sums[i - window];
+                    return (sums[i] - prefix) / window;
+                }).toArray();
     }
 
     interface IA
