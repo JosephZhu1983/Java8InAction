@@ -168,16 +168,14 @@ public class CompletableFutureTest
                                                 (20, orderIds ->
                                                         CompletableFuture.allOf
                                                                 (
-                                                                        CompletableFuture.supplyAsync(() -> getFraudStateBatch(orderIds))
-                                                                                .thenAccept
-                                                                                        (
-                                                                                                data -> data.entrySet().stream().map
-                                                                                                        (item ->
-                                                                                                                CompletableFuture.runAsync
-                                                                                                                        (() -> updateOrderFraudState(item.getKey(), item.getValue().orElse(FraudState.unknown)), executors)
-                                                                                                        )
-                                                                                                        .collect(Collectors.toList())
-                                                                                        )
+                                                                    CompletableFuture.supplyAsync(() -> getFraudStateBatch(orderIds))
+                                                                            .thenAccept
+                                                                            (
+                                                                                data -> data.entrySet().stream().map
+                                                                                (item -> CompletableFuture.runAsync
+                                                                                            (() -> updateOrderFraudState(item.getKey(), item.getValue().orElse(FraudState.unknown)), executors)
+                                                                                ).collect(Collectors.toList())
+                                                                            )
                                                                 ).join()
 
                                                 )
