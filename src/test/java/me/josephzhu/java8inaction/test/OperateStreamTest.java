@@ -102,6 +102,7 @@ public class OperateStreamTest
     {
         System.out.println("//最近半年的金额大于40的订单");
         orders.stream()
+                .filter(Objects::nonNull)
                 .filter(order -> order.getPlacedAt().isAfter(LocalDateTime.now().minusMonths(6)))
                 .filter(order -> order.getTotalPrice() > 40)
                 .map(order -> new Tuple3<>(order.getId(), order.getPlacedAt(), order.getTotalPrice()))
@@ -159,6 +160,7 @@ public class OperateStreamTest
         System.out.println(orders.stream()
                 .flatMap(order -> order.getOrderItemList().stream())
                 .mapToDouble(item -> item.getProductQuantity() * item.getProductPrice()).sum());
+        //另一种方式flatMap+mapToDouble=flatMapToDouble
         System.out.println(orders.stream()
                 .flatMapToDouble(order ->
                         order.getOrderItemList()

@@ -30,9 +30,12 @@ import static org.junit.Assert.assertThat;
 public class OtherNewFeaturesTest
 {
     @Test
-    public void defaultMethods()
+    public void defaultMethods() //默认方法,为什么引入?
     {
-
+        assertThat(new D().getName(), is("IA")); //默认方法
+        assertThat(new E().getName(), is("IC")); //默认方法的覆盖
+        assertThat(new F().getName(), is("IA")); //默认方法冲突的时候手动指定
+        assertThat(new G().getName(), is("C")); //子类优先继承父类的方法
     }
 
     @Test
@@ -56,6 +59,7 @@ public class OtherNewFeaturesTest
     @Test
     public void newLocalDateTime()
     {
+        //转换
         Date in = new Date();
         LocalDateTime ldt = LocalDateTime.ofInstant(in.toInstant(), ZoneId.systemDefault());
         Date out = Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
@@ -97,7 +101,7 @@ public class OtherNewFeaturesTest
         System.out.println(DateTimeFormatter.ofPattern("H HH").format(LocalDateTime.now()));
         System.out.println(DateTimeFormatter.ofPattern("mm").format(LocalDateTime.now()));
         System.out.println(DateTimeFormatter.ofPattern("ss").format(LocalDateTime.now()));
-        System.out.println(DateTimeFormatter.ofPattern("z x").format(ZonedDateTime.now()));
+        System.out.println(DateTimeFormatter.ofPattern("z x").format(ZonedDateTime.now())); //必须是ZonedDateTime才能输出时区信息
 
     }
 
@@ -215,6 +219,60 @@ public class OtherNewFeaturesTest
 
     @Test
     public void miscImprovements()
+    {
+
+    }
+
+    interface IA
+    {
+        default String getName()
+        {
+            return "IA";
+        }
+    }
+
+    interface IB
+    {
+        default String getName()
+        {
+            return "IB";
+        }
+    }
+
+    interface IC extends IA
+    {
+        default String getName()
+        {
+            return "IC";
+        }
+    }
+
+    class C
+    {
+        public String getName()
+        {
+            return "C";
+        }
+    }
+
+    class D implements IA
+    {
+    }
+
+    class E implements IC
+    {
+    }
+
+    class F implements IA, IB
+    {
+        @Override
+        public String getName()
+        {
+            return IA.super.getName();
+        }
+    }
+
+    class G extends C implements IA
     {
 
     }

@@ -108,15 +108,13 @@ public class CompletableFutureTest
     public void chain() //链式异步操作
     {
         Functions.calcTime("acceptEither的例子", () ->
-                CompletableFuture.supplyAsync(() -> Functions.doubleService.apply(1))
-                        .acceptEither(CompletableFuture.supplyAsync(() -> Functions.doubleService.apply(2)), logger::info)
-                        .join());
+                doubleService(1).acceptEither(doubleService(2), logger::info).join());
 
-        Functions.calcTime("thenCompose的例子", () ->
-                CompletableFuture.supplyAsync(() -> Functions.slowEcho.apply(1))
-                        .thenCompose(i -> CompletableFuture.supplyAsync(() -> Functions.doubleService.apply(i)))
-                        .whenComplete(logger::info)
-                        .join());
+        Functions.calcTime("thenCompose的例子", () -> echoService(1)
+                .thenCompose(this::doubleService)
+                .thenCompose(this::doubleService)
+                .thenCompose(this::doubleService)
+                .whenComplete(logger::info).join());
 
         Functions.calcTime("thenCombine下单的例子", () ->
                 CompletableFuture.supplyAsync(() -> Customer.getRandomCustomer())
@@ -125,7 +123,16 @@ public class CompletableFutureTest
                         .thenAccept(logger::info)
                         .join());
 
+    }
 
+    private CompletableFuture<Integer> doubleService(int n)
+    {
+        return CompletableFuture.supplyAsync(() -> Functions.doubleService.apply(n));
+    }
+
+    private CompletableFuture<Integer> echoService(int n)
+    {
+        return CompletableFuture.supplyAsync(() -> Functions.slowEcho.apply(n));
     }
 
     @Before
