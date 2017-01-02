@@ -10,7 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -163,5 +166,40 @@ public class FunctionalJavaCoolTest
             e.printStackTrace();
         }
         return "slow";
+    }
+
+    @Test
+    public void notCool()
+    {
+        try
+        {
+            IntStream.rangeClosed(-10, 10)
+                    .boxed()
+                    .filter(i -> 10 / i > 2)
+                    .map(Integer::doubleValue)
+                    .collect(Collectors.toList());
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        try
+        {
+            IntStream.rangeClosed(-10, 10)
+                    .boxed()
+                    .filter(this::condition)
+                    .map(Integer::doubleValue)
+                    .collect(Collectors.toList());
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    private boolean condition(int i)
+    {
+        return 10/i>2;
     }
 }

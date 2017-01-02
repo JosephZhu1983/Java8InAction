@@ -7,10 +7,18 @@ import me.josephzhu.java8inaction.test.model.Product;
 import org.jooq.lambda.Unchecked;
 import org.junit.Test;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
+import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -110,6 +118,19 @@ public class OtherNewFeaturesTest
         System.out.println(DateTimeFormatter.ofPattern("ss").format(LocalDateTime.now()));
         System.out.println(DateTimeFormatter.ofPattern("z x").format(ZonedDateTime.now())); //必须是ZonedDateTime才能输出时区信息
 
+        System.out.println(new DateTimeFormatterBuilder()
+                .appendValue(ChronoField.YEAR)
+                .appendLiteral("/")
+                .appendValue(ChronoField.MONTH_OF_YEAR)
+                .appendLiteral("/")
+                .appendValue(ChronoField.DAY_OF_YEAR)
+                .appendLiteral(" ")
+                .appendValue(ChronoField.HOUR_OF_DAY)
+                .appendLiteral(":")
+                .appendValue(ChronoField.MINUTE_OF_HOUR)
+                .appendLiteral(":")
+                .appendValue(ChronoField.SECOND_OF_MINUTE)
+                .toFormatter().format(LocalDateTime.now()));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -239,12 +260,30 @@ public class OtherNewFeaturesTest
     }
 
     @Test
-    public void testMovingAverage()
+    public void testMovingAverage()  //测试Arrays.parallelPrefix
     {
         System.out.println(
                 DoubleStream.of(movingAverage(new double[]{0, 1, 2, 3, 4, 3.5}, 3))
                         .boxed().map(String::valueOf).collect(joining(",")));
     }
+
+    @Test
+    public void nashorn() throws FileNotFoundException, ScriptException, NoSuchMethodException
+    {
+        ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+        engine.eval(new FileReader("script.js"));
+
+        Invocable invocable = (Invocable) engine;
+
+        Object result = invocable.invokeFunction("fun1", "朱晔");
+        System.out.println(result);
+        System.out.println(result.getClass());
+
+        invocable.invokeFunction("fun2", new Date());
+        invocable.invokeFunction("fun2", LocalDateTime.now());
+        invocable.invokeFunction("fun2", new Product(1L, "aa", 1.0));
+    }
+
 
     private double[] movingAverage(double[] list, int window)
     {

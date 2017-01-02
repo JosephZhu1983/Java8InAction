@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -129,7 +131,6 @@ public class CompletableFutureTest
                                 ((customer, product) -> Order.placeOrder(customer, product)))
                         .thenAccept(logger::info)
                         .join());
-
     }
 
     private CompletableFuture<Integer> doubleService(int n)
@@ -168,14 +169,14 @@ public class CompletableFutureTest
                                                 (20, orderIds ->
                                                         CompletableFuture.allOf
                                                                 (
-                                                                    CompletableFuture.supplyAsync(() -> getFraudStateBatch(orderIds))
-                                                                            .thenAccept
-                                                                            (
-                                                                                data -> data.entrySet().stream().map
-                                                                                (item -> CompletableFuture.runAsync
-                                                                                            (() -> updateOrderFraudState(item.getKey(), item.getValue().orElse(FraudState.unknown)), executors)
-                                                                                ).collect(Collectors.toList())
-                                                                            )
+                                                                        CompletableFuture.supplyAsync(() -> getFraudStateBatch(orderIds))
+                                                                                .thenAccept
+                                                                                        (
+                                                                                                data -> data.entrySet().stream().map
+                                                                                                        (item -> CompletableFuture.runAsync
+                                                                                                                (() -> updateOrderFraudState(item.getKey(), item.getValue().orElse(FraudState.unknown)), executors)
+                                                                                                        ).collect(Collectors.toList())
+                                                                                        )
                                                                 ).join()
 
                                                 )
