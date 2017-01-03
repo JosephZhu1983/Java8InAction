@@ -45,28 +45,27 @@ public class OtherNewFeaturesTest
     private ThreadLocal<List<String>> listThreadLocal = ThreadLocal.withInitial(ArrayList::new);
 
     @Test
-    public void defaultMethods() //默认方法,为什么引入?
-    {
-        assertThat(new D().getName(), is("IA")); //默认方法
-        assertThat(new E().getName(), is("IC")); //默认方法的覆盖
-        assertThat(new F().getName(), is("IA")); //默认方法冲突的时候手动指定
-        assertThat(new G().getName(), is("C")); //子类优先继承父类的方法
-    }
-
-    @Test
     public void newLocalDate()
     {
+        //创建
         System.out.println(LocalDate.now());
         System.out.println(LocalDate.of(1983, 02, 17));
         System.out.println(LocalDate.of(1983, Month.FEBRUARY, 17));
+
+        //演示操作
         System.out.println(LocalDate.of(1983, 02, 17).plusYears(30));
         System.out.println(LocalDate.now().minus(Period.ofDays(1)));
+
+        //各种例子
         System.out.println("//今年的程序员日");
         System.out.println(LocalDate.of(LocalDate.now().getYear(), 1, 1).plusDays(256));
+
         System.out.println("//本月的第一天");
         System.out.println(LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()));
+
         System.out.println("//今天之前的一个周六");
         System.out.println(LocalDate.now().with(TemporalAdjusters.previous(DayOfWeek.SATURDAY)));
+
         System.out.println("//本月最后一个工作日");
         System.out.println(LocalDate.now().with(TemporalAdjusters.lastInMonth(DayOfWeek.FRIDAY)));
     }
@@ -85,6 +84,7 @@ public class OtherNewFeaturesTest
         System.out.println(LocalDateTime.now().getHour());
         System.out.println(LocalDateTime.now().getMinute());
         System.out.println(LocalDateTime.now().getSecond());
+        //演示操作
         System.out.println(LocalDateTime.now().plus(Period.ofDays(1)).minus(Duration.ofHours(12)));
     }
 
@@ -109,6 +109,7 @@ public class OtherNewFeaturesTest
                 .withLocale(Locale.CHINESE)
                 .format(LocalDateTime.now()));
 
+        //演示DateTimeFormatter的各种Pattern
         System.out.println(DateTimeFormatter.ofPattern("yy yyyy").format(LocalDateTime.now()));
         System.out.println(DateTimeFormatter.ofPattern("M MM MMM MMMM").withLocale(Locale.CHINESE).format(LocalDateTime.now()));
         System.out.println(DateTimeFormatter.ofPattern("d dd").format(LocalDateTime.now()));
@@ -118,6 +119,7 @@ public class OtherNewFeaturesTest
         System.out.println(DateTimeFormatter.ofPattern("ss").format(LocalDateTime.now()));
         System.out.println(DateTimeFormatter.ofPattern("z x").format(ZonedDateTime.now())); //必须是ZonedDateTime才能输出时区信息
 
+        //使用DateTimeFormatterBuilder比记住各种演示DateTimeFormatter的各种Pattern的Pattern更直观
         System.out.println(new DateTimeFormatterBuilder()
                 .appendValue(ChronoField.YEAR)
                 .appendLiteral("/")
@@ -137,10 +139,16 @@ public class OtherNewFeaturesTest
     public void optional()
     {
         assertThat(Optional.of(1).get(), is(1));
+
+        //Optional的各种链式处理
         assertThat(Optional.ofNullable(null).orElse("A"), is("A"));
+
         assertFalse(OptionalDouble.empty().isPresent());
+
         assertThat(Optional.of(1).map(Math::incrementExact).get(), is(2));
+
         assertThat(Optional.of(1).filter(integer -> integer % 2 == 0).orElse(null), is(nullValue()));
+
         Optional.empty().orElseThrow(IllegalArgumentException::new);
     }
 
@@ -151,9 +159,11 @@ public class OtherNewFeaturesTest
         properties.put("a", "1");
         properties.put("b", "b");
         properties.put("c", "-1");
-        assertThat(readPositiveNumberCool(properties, "a"), is(readPositiveNumber(properties, "a")));
-        assertThat(readPositiveNumberCool(properties, "b"), is(readPositiveNumber(properties, "b")));
-        assertThat(readPositiveNumberCool(properties, "b"), is(readPositiveNumber(properties, "b")));
+
+        //Optional链式处理的一个例子
+        assertThat(readPositiveNumberCool(properties, "a"), is(readPositiveNumber(properties, "a")));//1
+        assertThat(readPositiveNumberCool(properties, "b"), is(readPositiveNumber(properties, "b")));//0
+        assertThat(readPositiveNumberCool(properties, "c"), is(readPositiveNumber(properties, "c")));//0
     }
 
     private int readPositiveNumber(Map<String, String> properties, String name)
@@ -166,7 +176,8 @@ public class OtherNewFeaturesTest
                 Integer integer = Integer.parseInt(value);
                 if (integer > 0)
                     return integer;
-            } catch (NumberFormatException ex)
+            }
+            catch (NumberFormatException ex)
             {
             }
         }
@@ -186,7 +197,8 @@ public class OtherNewFeaturesTest
         try
         {
             return Optional.of(Integer.parseInt(s));
-        } catch (NumberFormatException ex)
+        }
+        catch (NumberFormatException ex)
         {
             return Optional.empty();
         }
@@ -198,14 +210,14 @@ public class OtherNewFeaturesTest
         Map<String, Long> map = Arrays.asList("aa aa aa bb bb cc".split(" "))
                 .stream().collect(Collectors.groupingBy(Function.identity(), counting()));
 
-        assertThat(map.getOrDefault("dd", 0L), is(0L));
+        assertThat(map.getOrDefault("dd", 0L), is(0L)); //演示getOrDefault
 
         map.putIfAbsent("aa", 1L);//失败
         map.putIfAbsent("dd", 1L);//成功
         assertThat(map.get("aa"), is(3L));
         assertThat(map.get("dd"), is(1L));
 
-        map.replaceAll((k, v) -> k.length() + v);
+        map.replaceAll((k, v) -> k.length() + v); //演示replaceAll
         map.forEach((k, v) -> System.out.println(k + ":" + v));
     }
 
@@ -233,7 +245,7 @@ public class OtherNewFeaturesTest
     @Test
     @Filter(value = FilterA.class)
     @Filter(value = FilterB.class)
-    public void repeatableAnnotation() //可重复的注解
+    public void repeatableAnnotation() //可重复的注解,是不是直观很多?
     {
         class Local
         {
@@ -260,11 +272,25 @@ public class OtherNewFeaturesTest
     }
 
     @Test
-    public void testMovingAverage()  //测试Arrays.parallelPrefix
+    public void testMovingAverage()  //基于时间窗口的平均值(用Arrays.parallelPrefix来实现)
     {
         System.out.println(
                 DoubleStream.of(movingAverage(new double[]{0, 1, 2, 3, 4, 3.5}, 3))
                         .boxed().map(String::valueOf).collect(joining(",")));
+    }
+
+    private double[] movingAverage(double[] list, int window)
+    {
+        double[] sums = Arrays.copyOf(list, list.length);
+        Arrays.parallelPrefix(sums, Double::sum);
+        System.out.println(DoubleStream.of(sums).boxed().map(String::valueOf).collect(joining(",")));
+        int start = window - 1;
+        return IntStream.range(start, sums.length)
+                .mapToDouble(i ->
+                {
+                    double prefix = i == start ? 0 : sums[i - window];
+                    return (sums[i] - prefix) / window;
+                }).toArray();
     }
 
     @Test
@@ -282,21 +308,6 @@ public class OtherNewFeaturesTest
         invocable.invokeFunction("fun2", new Date());
         invocable.invokeFunction("fun2", LocalDateTime.now());
         invocable.invokeFunction("fun2", new Product(1L, "aa", 1.0));
-    }
-
-
-    private double[] movingAverage(double[] list, int window)
-    {
-        double[] sums = Arrays.copyOf(list, list.length);
-        Arrays.parallelPrefix(sums, Double::sum);
-        System.out.println(DoubleStream.of(sums).boxed().map(String::valueOf).collect(joining(",")));
-        int start = window - 1;
-        return IntStream.range(start, sums.length)
-                .mapToDouble(i ->
-                {
-                    double prefix = i == start ? 0 : sums[i - window];
-                    return (sums[i] - prefix) / window;
-                }).toArray();
     }
 
     interface IA
@@ -351,5 +362,14 @@ public class OtherNewFeaturesTest
     class G extends C implements IA
     {
 
+    }
+
+    @Test
+    public void defaultMethods() //默认方法,引入就是为了解决Stream的问题
+    {
+        assertThat(new D().getName(), is("IA")); //默认方法
+        assertThat(new E().getName(), is("IC")); //默认方法的覆盖
+        assertThat(new F().getName(), is("IA")); //默认方法冲突的时候手动指定
+        assertThat(new G().getName(), is("C")); //子类优先继承父类的方法
     }
 }

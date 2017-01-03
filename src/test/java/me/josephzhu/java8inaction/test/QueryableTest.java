@@ -19,6 +19,7 @@ public class QueryableTest
     @Test
     public void testQueryableForEach()
     {
+
         Iterator<String> expected = Arrays
                 .asList("aa", "bb", "-cc", "dd", "-ee", "aa", "bb")
                 .iterator();

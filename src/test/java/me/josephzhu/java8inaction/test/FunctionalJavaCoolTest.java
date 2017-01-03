@@ -1,16 +1,14 @@
 package me.josephzhu.java8inaction.test;
 
+import me.josephzhu.java8inaction.test.common.Functions;
 import me.josephzhu.java8inaction.test.model.Product;
 import org.apache.log4j.Logger;
+import org.jooq.lambda.tuple.Tuple3;
 import org.junit.Test;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -25,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 public class FunctionalJavaCoolTest
 {
     private static Logger logger = Logger.getLogger(FunctionalJavaCoolTest.class);
+    private static Random random = new Random();
     private Map<Long, Product> cache = new ConcurrentHashMap<>();
 
     @Test
@@ -32,7 +31,7 @@ public class FunctionalJavaCoolTest
     {
         List<Integer> ints = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
 
-        //临时集合
+        //临时中间集合,这种外循环的代码没有可读性
         List<Point2D> point2DList = new ArrayList<>();
         for (Integer i : ints)
         {
@@ -52,11 +51,39 @@ public class FunctionalJavaCoolTest
             }
         }
 
+        //如何用一行代码来实现
         assertThat(max, is(ints.stream()
                 .map(i -> new Point2D.Double((double) i % 3, (double) i / 3))
                 .filter(point -> point.getY() > 1)
                 .mapToDouble(point -> point.distance(0, 0))
                 .max().orElse(0)));
+    }
+
+    @Test
+    public void lambdaGroupByCool()
+    {
+        List<Tuple3<Integer, Integer, Integer>> data = IntStream.rangeClosed(1, 1000000)
+                .mapToObj(i -> new Tuple3<>(
+                        random.nextInt(10000),
+                        random.nextInt(100000),
+                        random.nextInt(100)))
+                .collect(Collectors.toList());
+
+        Functions.calcTime("大量数据分组(Stream方式)", () ->
+        {
+            Map<Integer, List<Tuple3<Integer, Integer, Integer>>> result = data.stream().collect(Collectors.groupingBy(Tuple3::v3));
+        });
+
+        Functions.calcTime("大量数据分组(传统方式)", () ->
+        {
+            Map<Integer, List<Tuple3<Integer, Integer, Integer>>> result = new HashMap<>();
+            for (Tuple3<Integer, Integer, Integer> item : data)
+            {
+                if (!result.containsKey(item.v1))
+                    result.put(item.v1, new ArrayList<>());
+                result.get(item.v1).add(item);
+            }
+        });
     }
 
     @Test
@@ -95,7 +122,7 @@ public class FunctionalJavaCoolTest
     }
 
     @Test
-    public void notcoolCache() //一条语句实现cache的常用模式
+    public void notcoolCache()
     {
         getProductAndCache(1L);
         getProductAndCache(100L);
@@ -161,7 +188,8 @@ public class FunctionalJavaCoolTest
         try
         {
             Thread.sleep(1000);
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             e.printStackTrace();
         }
@@ -184,6 +212,7 @@ public class FunctionalJavaCoolTest
             ex.printStackTrace();
         }
 
+        //lambda的问题是出了异常比较难排查,唯一的方法就是使用独立的命名函数
         try
         {
             IntStream.rangeClosed(-10, 10)
@@ -200,6 +229,6 @@ public class FunctionalJavaCoolTest
 
     private boolean condition(int i)
     {
-        return 10/i>2;
+        return 10 / i > 2;
     }
 }

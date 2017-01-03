@@ -18,7 +18,8 @@ public class Functions
         try
         {
             Thread.sleep(1000);
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             e.printStackTrace();
         }
@@ -30,7 +31,8 @@ public class Functions
         try
         {
             Thread.sleep(1000);
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             e.printStackTrace();
         }
@@ -41,7 +43,8 @@ public class Functions
         try
         {
             Thread.sleep(1000);
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             e.printStackTrace();
         }
@@ -53,7 +56,8 @@ public class Functions
         try
         {
             Thread.sleep(random.ints(1, 1, 10).findFirst().getAsInt() * 100);
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             e.printStackTrace();
         }

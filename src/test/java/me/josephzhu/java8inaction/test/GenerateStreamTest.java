@@ -130,6 +130,7 @@ public class GenerateStreamTest
     @Test
     public void grepContentFromFileExample() throws IOException
     {
+        //实现一个类似grep的例子,查找当前目录所有java文件中带有class的行
         Pattern pattern = Pattern.compile("class");
         PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.java");
         try (Stream<Path> pathStream = Files.walk(Paths.get(".")))
@@ -143,13 +144,13 @@ public class GenerateStreamTest
                             return Files.readAllLines(path).stream()
                                     .filter(line -> pattern.matcher(line).find())
                                     .map(line -> path + ":" + line);
-                        } catch (IOException e)
+                        }
+                        catch (IOException e)
                         {
                             e.printStackTrace();
                             return Stream.of("");
                         }
                     })
-                    .filter(line -> !line.isEmpty())
                     .forEach(logger::info);
         }
     }

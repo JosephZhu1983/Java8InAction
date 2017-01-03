@@ -16,8 +16,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.*;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -38,6 +36,14 @@ public class CompletableFutureTest
     });
     private Map<Long, FraudState> orders = new ConcurrentHashMap<>();
 
+    @Before
+    public void initOrders()
+    {
+        orders = LongStream.rangeClosed(1, 100)
+                .boxed()
+                .collect(Collectors.toMap(Function.identity(), l -> FraudState.unchecked));
+    }
+
     @Test
     public void basic() //基本使用
     {
@@ -46,7 +52,8 @@ public class CompletableFutureTest
         try
         {
             completableFuture1.complete(future.get());
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -54,7 +61,8 @@ public class CompletableFutureTest
         try
         {
             logger.info(completableFuture1.get());
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -65,21 +73,23 @@ public class CompletableFutureTest
         {
             logger.info(completableFuture2.getNow(-1)); //一开始获取不到,用默认值
             logger.info(completableFuture2.get()); //等待并获取结果
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             logger.error("错误", e);
         }
     }
 
     @Test
-    public void timeout()
+    public void timeout() //演示超时
     {
         CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> Functions.slowEcho.apply(1));
 
         try
         {
             logger.info(completableFuture.get(500, TimeUnit.MILLISECONDS)); //超时
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             logger.error("错误", e);
         }
@@ -143,14 +153,6 @@ public class CompletableFutureTest
         return CompletableFuture.supplyAsync(() -> Functions.slowEcho.apply(n));
     }
 
-    @Before
-    public void initOrders()
-    {
-        orders = LongStream.rangeClosed(1, 100)
-                .boxed()
-                .collect(Collectors.toMap(Function.identity(), l -> FraudState.unchecked));
-    }
-
     @Test
     public void updateFraudDataExample()
     {
@@ -194,7 +196,8 @@ public class CompletableFutureTest
         try
         {
             Thread.sleep(1000);
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             e.printStackTrace();
         }
@@ -207,7 +210,8 @@ public class CompletableFutureTest
         try
         {
             Thread.sleep(1000);
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             e.printStackTrace();
         }
@@ -229,7 +233,8 @@ public class CompletableFutureTest
         try
         {
             Thread.sleep(500);
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             e.printStackTrace();
         }

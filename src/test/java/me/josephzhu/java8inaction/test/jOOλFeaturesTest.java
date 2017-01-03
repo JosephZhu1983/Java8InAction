@@ -98,8 +98,10 @@ public class jOOλFeaturesTest
         List<Tuple2<Long, Long>> orders = new ArrayList<>();
         orders.add(new Tuple2<>(1L, 1L));
         orders.add(new Tuple2<>(2L, 111L));
+        //内连接
         System.out.println(Seq.seq(orders.stream())
                 .innerJoin(Product.getData().stream(), (a, b) -> a.v2 == b.getId()));
+        //左连接
         System.out.println(Seq.seq(orders.stream())
                 .leftOuterJoin(Product.getData().stream(), (a, b) -> a.v2 == b.getId()));
     }
@@ -107,8 +109,11 @@ public class jOOλFeaturesTest
     @Test
     public void extensions()
     {
+        //各种元祖类型
         Tuple4 tuple4 = new Tuple4<>(1, 2, 3, 4);
         System.out.println(tuple4);
+
+        //各种函数接口类型
         Function4<Integer, Integer, Integer, Integer, Integer> function4 = (a, b, c, d) -> a + b + c + d;
         assertThat(function4.apply(tuple4), is(10));
     }

@@ -26,7 +26,8 @@ public class Customer
         try
         {
             Thread.sleep(300);
-        } catch (InterruptedException e)
+        }
+        catch (InterruptedException e)
         {
             e.printStackTrace();
         }
