@@ -1,0 +1,434 @@
+{
+  "config" : {
+    "expanded" : true,
+    "companyName" : "company",
+    "name" : "apollo_query",
+    "packageLocation" : "src/main/java/",
+    "dbmses" : [
+      {
+        "expanded" : true,
+        "port" : 3306,
+        "schemas" : [
+          {
+            "tables" : [
+              {
+                "expanded" : true,
+                "primaryKeyColumns" : [
+                  {
+                    "expanded" : true,
+                    "name" : "id",
+                    "ordinalPosition" : 1
+                  }
+                ],
+                "indexes" : [
+                  {
+                    "expanded" : false,
+                    "unique" : true,
+                    "name" : "PRIMARY",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "id",
+                        "ordinalPosition" : 1
+                      }
+                    ],
+                    "enabled" : true
+                  },
+                  {
+                    "expanded" : false,
+                    "unique" : true,
+                    "name" : "ux_tracking_id",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "tracking_id",
+                        "ordinalPosition" : 1
+                      }
+                    ],
+                    "enabled" : true
+                  },
+                  {
+                    "expanded" : false,
+                    "unique" : false,
+                    "name" : "ix_accept_at",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "accept_at",
+                        "ordinalPosition" : 1
+                      }
+                    ],
+                    "enabled" : true
+                  },
+                  {
+                    "expanded" : false,
+                    "unique" : false,
+                    "name" : "ix_agent_id_created_at",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "agent_id",
+                        "ordinalPosition" : 1
+                      },
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "created_at",
+                        "ordinalPosition" : 2
+                      }
+                    ],
+                    "enabled" : true
+                  },
+                  {
+                    "expanded" : false,
+                    "unique" : false,
+                    "name" : "ix_carrier_driver_id_created_at",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "carrier_driver_id",
+                        "ordinalPosition" : 1
+                      },
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "created_at",
+                        "ordinalPosition" : 2
+                      }
+                    ],
+                    "enabled" : true
+                  },
+                  {
+                    "expanded" : false,
+                    "unique" : false,
+                    "name" : "ix_carrier_id_created_at",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "carrier_id",
+                        "ordinalPosition" : 1
+                      },
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "created_at",
+                        "ordinalPosition" : 2
+                      }
+                    ],
+                    "enabled" : true
+                  },
+                  {
+                    "expanded" : false,
+                    "unique" : false,
+                    "name" : "ix_complete_at",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "complete_at",
+                        "ordinalPosition" : 1
+                      }
+                    ],
+                    "enabled" : true
+                  },
+                  {
+                    "expanded" : false,
+                    "unique" : false,
+                    "name" : "ix_created_at",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "created_at",
+                        "ordinalPosition" : 1
+                      }
+                    ],
+                    "enabled" : true
+                  },
+                  {
+                    "expanded" : false,
+                    "unique" : false,
+                    "name" : "ix_grid_id_created_at",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "grid_id",
+                        "ordinalPosition" : 1
+                      },
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "created_at",
+                        "ordinalPosition" : 2
+                      }
+                    ],
+                    "enabled" : true
+                  },
+                  {
+                    "expanded" : false,
+                    "unique" : false,
+                    "name" : "ix_retailer_id_created_at",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "retailer_id",
+                        "ordinalPosition" : 1
+                      },
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "created_at",
+                        "ordinalPosition" : 2
+                      }
+                    ],
+                    "enabled" : true
+                  },
+                  {
+                    "expanded" : false,
+                    "unique" : false,
+                    "name" : "ix_shipping_state_created_at",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "shipping_state",
+                        "ordinalPosition" : 1
+                      },
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "created_at",
+                        "ordinalPosition" : 2
+                      }
+                    ],
+                    "enabled" : true
+                  },
+                  {
+                    "expanded" : false,
+                    "unique" : false,
+                    "name" : "ix_station_id_created_at",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "station_id",
+                        "ordinalPosition" : 1
+                      },
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "created_at",
+                        "ordinalPosition" : 2
+                      }
+                    ],
+                    "enabled" : true
+                  },
+                  {
+                    "expanded" : false,
+                    "unique" : false,
+                    "name" : "ix_updated_at",
+                    "indexColumns" : [
+                      {
+                        "orderType" : "ASC",
+                        "expanded" : true,
+                        "name" : "updated_at",
+                        "ordinalPosition" : 1
+                      }
+                    ],
+                    "enabled" : true
+                  }
+                ],
+                "columns" : [
+                  {
+                    "databaseType" : "java.lang.Long",
+                    "typeMapper" : "com.speedment.runtime.typemapper.primitive.PrimitiveTypeMapper",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "autoIncrement" : true,
+                    "name" : "id",
+                    "ordinalPosition" : 1,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.Long",
+                    "typeMapper" : "com.speedment.runtime.typemapper.primitive.PrimitiveTypeMapper",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "tracking_id",
+                    "ordinalPosition" : 2,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.Integer",
+                    "typeMapper" : "com.speedment.runtime.typemapper.primitive.PrimitiveTypeMapper",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "source_id",
+                    "ordinalPosition" : 3,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.String",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "platform_tracking_id",
+                    "ordinalPosition" : 4,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.Long",
+                    "typeMapper" : "com.speedment.runtime.typemapper.primitive.PrimitiveTypeMapper",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "retailer_id",
+                    "ordinalPosition" : 5,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.Byte",
+                    "typeMapper" : "com.speedment.runtime.typemapper.primitive.PrimitiveTypeMapper",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "shipping_option",
+                    "ordinalPosition" : 6,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.Long",
+                    "typeMapper" : "com.speedment.runtime.typemapper.primitive.PrimitiveTypeMapper",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "grid_id",
+                    "ordinalPosition" : 7,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.Integer",
+                    "typeMapper" : "com.speedment.runtime.typemapper.primitive.PrimitiveTypeMapper",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "carrier_id",
+                    "ordinalPosition" : 8,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.Integer",
+                    "typeMapper" : "com.speedment.runtime.typemapper.primitive.PrimitiveTypeMapper",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "agent_id",
+                    "ordinalPosition" : 9,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.Integer",
+                    "typeMapper" : "com.speedment.runtime.typemapper.primitive.PrimitiveTypeMapper",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "station_id",
+                    "ordinalPosition" : 10,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.String",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "carrier_driver_id",
+                    "ordinalPosition" : 11,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.Byte",
+                    "typeMapper" : "com.speedment.runtime.typemapper.primitive.PrimitiveTypeMapper",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "shipping_state",
+                    "ordinalPosition" : 12,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.Byte",
+                    "typeMapper" : "com.speedment.runtime.typemapper.primitive.PrimitiveTypeMapper",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "shipping_reason_code",
+                    "ordinalPosition" : 13,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.String",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "remark_code",
+                    "ordinalPosition" : 14,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.lang.Integer",
+                    "typeMapper" : "com.speedment.runtime.typemapper.primitive.PrimitiveTypeMapper",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "cityid",
+                    "ordinalPosition" : 15,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.sql.Timestamp",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "accept_at",
+                    "ordinalPosition" : 16,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.sql.Timestamp",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "complete_at",
+                    "ordinalPosition" : 17,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.sql.Timestamp",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "updated_at",
+                    "ordinalPosition" : 18,
+                    "enabled" : true
+                  },
+                  {
+                    "databaseType" : "java.sql.Timestamp",
+                    "expanded" : true,
+                    "nullable" : false,
+                    "name" : "created_at",
+                    "ordinalPosition" : 19,
+                    "enabled" : true
+                  }
+                ],
+                "name" : "tb_shipping_order_main",
+                "enabled" : true
+              }
+            ],
+            "expanded" : true,
+            "name" : "apollo_query",
+            "enabled" : true
+          }
+        ],
+        "typeName" : "MySQL",
+        "ipAddress" : "192.168.104.243",
+        "name" : "apollo_query",
+        "enabled" : true,
+        "username" : "apollo_query_dal"
+      }
+    ],
+    "enabled" : true
+  }
+}

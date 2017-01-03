@@ -156,6 +156,7 @@ public class CompletableFutureTest
     @Test
     public void updateFraudDataExample()
     {
+        //一行代码实现:
         //第一步:获取待处理的订单:需要1秒
         //第二步:分批查询订单的反欺诈状态:分成5批,需要5秒获取数据
         //第三步:更新订单的反欺诈状态:10线程每秒可以保存20单,需要5秒
@@ -163,28 +164,21 @@ public class CompletableFutureTest
 
         System.out.println(orders.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue, Collectors.counting())));
 
-        Functions.calcTime
-                ("批量同步欺诈状态到运单", () ->
-                        getToBeProcessedOrders().stream()
-                                .collect
-                                        (new BatchCollector<>
-                                                (20, orderIds ->
-                                                        CompletableFuture.allOf
-                                                                (
-                                                                        CompletableFuture.supplyAsync(() -> getFraudStateBatch(orderIds))
-                                                                                .thenAccept
-                                                                                        (
-                                                                                                data -> data.entrySet().stream().map
-                                                                                                        (item -> CompletableFuture.runAsync
-                                                                                                                (() -> updateOrderFraudState(item.getKey(), item.getValue().orElse(FraudState.unknown)), executors)
-                                                                                                        ).collect(Collectors.toList())
-                                                                                        )
-                                                                ).join()
-
-                                                )
-
-                                        )
-                );
+        Functions.calcTime("批量同步欺诈状态到运单", () ->
+            getToBeProcessedOrders().stream().collect(new BatchCollector<>(20, orderIds ->
+                    CompletableFuture.allOf(
+                        CompletableFuture.supplyAsync(() -> getFraudStateBatch(orderIds))
+                            .thenAccept
+                            (
+                                data -> data.entrySet().stream().map
+                                        (item -> CompletableFuture.runAsync
+                                            (() -> updateOrderFraudState(item.getKey(),
+                                                    item.getValue().orElse(FraudState.unknown)), executors)
+                                        ).collect(Collectors.toList())
+                            )
+                    ).join())
+            )
+        );
 
         //getToBeProcessedOrders().stream().collect(new BatchCollector<>(10, orderIds -> CompletableFuture.allOf(CompletableFuture.supplyAsync(() -> getFraudStateBatch(orderIds)).thenAccept(data -> data.entrySet().stream().map(item -> CompletableFuture.runAsync(() -> updateOrderFraudState(item.getKey(), item.getValue().orElse(FraudState.unknown)), executors)).collect(Collectors.toList()))).join()));
 
