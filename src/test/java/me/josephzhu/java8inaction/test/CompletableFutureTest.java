@@ -98,6 +98,8 @@ public class CompletableFutureTest
     @Test
     public void customThreadPool() //自定义线程池
     {
+        //CF相比parallel可以灵活控制线程池,适用于IO绑定的任务,CPU绑定的任务使用parallel足够
+
         Functions.calcTime("parallel", () ->
                 IntStream.rangeClosed(1, 10)
                         .parallel()

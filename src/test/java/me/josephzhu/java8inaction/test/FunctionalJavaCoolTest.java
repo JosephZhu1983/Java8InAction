@@ -7,12 +7,16 @@ import org.jooq.lambda.tuple.Tuple3;
 import org.junit.Test;
 
 import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.counting;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -86,6 +90,20 @@ public class FunctionalJavaCoolTest
         });
     }
 
+    @Test
+    public void wordCountExample() throws IOException
+    {
+        Map<String, Long> wordCount = Files.lines(Paths.get("/Users/zhuye/Documents/tb_shipping_order.sql"))
+                .parallel()
+                .flatMap(line -> Arrays.stream(line.trim().split("\\s")))
+                .map(word -> word.replaceAll("[^a-zA-Z]", "").toLowerCase().trim())
+                .filter(word -> word.length() > 0)
+                .map(word -> new AbstractMap.SimpleEntry<>(word, 1))
+                .collect(Collectors.groupingBy(AbstractMap.SimpleEntry::getKey, counting()));
+
+        wordCount.forEach((k, v) -> System.out.println(String.format("%s ==>> %d", k, v)));
+
+    }
     @Test
     public void noLoopNoIf() //用Stream来替代循环和判断
     {

@@ -4,6 +4,7 @@ import me.josephzhu.java8inaction.test.common.Functions;
 import me.josephzhu.java8inaction.test.model.TVCategory;
 import me.josephzhu.java8inaction.test.model.TVChannel;
 import me.josephzhu.java8inaction.test.model.TVService;
+import org.apache.log4j.Logger;
 import org.jooq.lambda.Unchecked;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +16,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -26,6 +31,7 @@ public class ParallelStreamTest
 {
     private static String serviceKey = "671ce07390f367bc490d82f8aec9fd82";
     private TVService service = null;
+    private static Logger logger = Logger.getLogger(ParallelStreamTest.class);
 
     @Test
     public void performanceTest() //串行和并行的性能测试
@@ -53,17 +59,18 @@ public class ParallelStreamTest
     @Test
     public void parallelism() //修改并行度
     {
-        //执行【串行】耗时:9841毫秒
-        //执行【并行】耗时:3233毫秒
         System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "8");
-        Functions.calcTime("并行8并行度", () -> LongStream.rangeClosed(1, 1000000000L).mapToDouble(Math::sqrt).sum());
-        //执行【并行8并行度】耗时:9209毫秒
-        //由于只有4个核,所以对于CPU bound的操作,提高并行度只会增加线程上下文切换的成本,不会带来任何的性能优势
 
         IntStream.rangeClosed(1, 10)
                 .parallel()
-                .forEach(Functions.slowPrint);
-        //可以看到数字是一下子出来8个
+                .forEach(i->logger.info(Functions.slowEcho.apply(i)));
+
+        Functions.calcTime("并行8并行度", () -> LongStream.rangeClosed(1, 1000000000L).mapToDouble(Math::sqrt).sum());
+        //执行【串行】耗时:9841毫秒
+        //执行【并行】耗时:3233毫秒
+        //执行【并行8并行度】耗时:9209毫秒
+        //由于只有4个核,所以对于CPU bound的操作,提高并行度只会增加线程上下文切换的成本,不会带来任何的性能优势
+
     }
 
     @Test
