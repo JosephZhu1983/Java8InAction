@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 import static java.util.stream.Collectors.counting;
 import static org.hamcrest.CoreMatchers.is;
@@ -41,8 +42,10 @@ public class FunctionalJavaCoolTest
         {
             point2DList.add(new Point2D.Double((double) i % 3, (double) i / 3));
         }
-        //默认值
-        double max = 0;
+        //临时变量,纯粹是为了获得最后结果需要的中间变量
+        double total = 0;
+        int count=0;
+
         for (Point2D point2D : point2DList)
         {
             //过滤
@@ -50,17 +53,21 @@ public class FunctionalJavaCoolTest
             {
                 //算距离
                 double distance = point2D.distance(0, 0);
-                //比较
-                max = Math.max(max, distance);
+                total += distance;
+                count++;
             }
         }
 
-        //如何用一行代码来实现
-        assertThat(max, is(ints.stream()
+        double average = total / count;
+
+        //如何用一行代码来实现,比较一下可读性
+        assertThat(average, is(
+                ints.stream()
                 .map(i -> new Point2D.Double((double) i % 3, (double) i / 3))
                 .filter(point -> point.getY() > 1)
                 .mapToDouble(point -> point.distance(0, 0))
-                .max().orElse(0)));
+                .average()
+                .orElse(0)));
     }
 
     @Test
@@ -102,7 +109,6 @@ public class FunctionalJavaCoolTest
                 .collect(Collectors.groupingBy(AbstractMap.SimpleEntry::getKey, counting()));
 
         wordCount.forEach((k, v) -> System.out.println(String.format("%s ==>> %d", k, v)));
-
     }
     @Test
     public void noLoopNoIf() //用Stream来替代循环和判断
@@ -148,6 +154,34 @@ public class FunctionalJavaCoolTest
         System.out.println(cache);
         assertThat(cache.size(), is(1));
         assertTrue(cache.containsKey(1L));
+    }
+
+    @Test
+    public void performanceBenchmark()
+    {
+        //http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
+
+        Functions.calcTime("lambda", ()-> LongStream.rangeClosed(1,10000000000L).forEach(i->lambda()));
+        Functions.calcTime("anonymous", ()->LongStream.rangeClosed(1,10000000000L).forEach(i->anonymous()));
+    }
+
+    private Supplier<String> lambda()
+    {
+        String localString = "test";
+        return ()->localString;
+    }
+
+    private Supplier <String> anonymous()
+    {
+        String localString = "test";
+        return new Supplier<String>()
+        {
+            @Override
+            public String get()
+            {
+                return localString;
+            }
+        };
     }
 
     private Product getProductAndCacheCool(Long id)

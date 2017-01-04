@@ -31,16 +31,6 @@
         </dependency>
         <dependency>
             <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <version>2.1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker</artifactId>
-            <version>2.1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.checkerframework</groupId>
             <artifactId>jdk8</artifactId>
             <version>2.1.6</version>
         </dependency>
@@ -63,6 +53,16 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.39</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-debug-all</artifactId>
+            <version>5.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>me.qmx.jitescript</groupId>
+            <artifactId>jitescript</artifactId>
+            <version>0.3.0</version>
         </dependency>
     </dependencies>
 
