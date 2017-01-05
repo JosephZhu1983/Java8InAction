@@ -151,7 +151,7 @@ public class OperateStreamTest
     public void sort() //排序
     {
         System.out.println("//大于50的订单,按照订单价格倒序前5");
-        orders.stream().filter(order -> order.getTotalPrice() > 20)
+        orders.stream().filter(order -> order.getTotalPrice() > 50)
                 .sorted((a, b) -> b.getTotalPrice().compareTo(a.getTotalPrice()))
                 .map(order -> new Tuple2(order.getId(), order.getTotalPrice()))
                 .limit(5)
@@ -159,7 +159,7 @@ public class OperateStreamTest
 
         System.out.println("******");
 
-        orders.stream().filter(order -> order.getTotalPrice() > 20)
+        orders.stream().filter(order -> order.getTotalPrice() > 50)
                 .sorted(comparing(Order::getTotalPrice).reversed())
                 .map(order -> new Tuple2(order.getId(), order.getTotalPrice()))
                 .limit(5)
@@ -202,7 +202,7 @@ public class OperateStreamTest
                 })));
 
         System.out.println("//按照用户名分组,统计下单数量");
-        //groupingBy下游是groupingBy
+        //groupingBy下游是counting
         System.out.println(orders.stream().collect(groupingBy(Order::getCustomerName, counting()))
                 .entrySet().stream().sorted(Map.Entry.<String, Long>comparingByValue().reversed()).collect(toList()));
 

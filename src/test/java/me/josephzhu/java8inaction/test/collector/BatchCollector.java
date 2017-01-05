@@ -57,8 +57,7 @@ public class BatchCollector<T> implements Collector<T, List<T>, List<T>>
     {
         return ts ->
         {
-            if (ts.size() > 0)
-                batchProcessor.accept(ts);
+            batchProcessor.accept(ts);
             return Collections.emptyList();
         };
     }

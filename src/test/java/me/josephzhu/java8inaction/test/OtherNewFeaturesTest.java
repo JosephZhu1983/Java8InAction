@@ -127,7 +127,7 @@ public class OtherNewFeaturesTest
                 .appendLiteral("/")
                 .appendValue(ChronoField.DAY_OF_YEAR)
                 .appendLiteral(" ")
-                .appendValue(ChronoField.HOUR_OF_DAY)
+                .appendValue(ChronoField.CLOCK_HOUR_OF_DAY)
                 .appendLiteral(":")
                 .appendValue(ChronoField.MINUTE_OF_HOUR)
                 .appendLiteral(":")

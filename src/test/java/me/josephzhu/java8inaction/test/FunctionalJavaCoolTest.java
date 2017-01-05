@@ -82,7 +82,7 @@ public class FunctionalJavaCoolTest
 
         Functions.calcTime("大量数据分组(Stream方式)", () ->
         {
-            Map<Integer, List<Tuple3<Integer, Integer, Integer>>> result = data.stream().collect(Collectors.groupingBy(Tuple3::v3));
+            Map<Integer, List<Tuple3<Integer, Integer, Integer>>> result = data.stream().collect(Collectors.groupingBy(Tuple3::v1));
         });
 
         Functions.calcTime("大量数据分组(传统方式)", () ->
@@ -197,7 +197,8 @@ public class FunctionalJavaCoolTest
         if (cache.containsKey(id))
         {
             product = cache.get(id);
-        } else
+        }
+        else
         {
             for (Product p : Product.getData())
             {
@@ -220,7 +221,7 @@ public class FunctionalJavaCoolTest
         {
             public boolean isDebugEnabled()
             {
-                return true;
+                return false;
             }
 
             public void info(Supplier<String> message)
