@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * Created by zhuye on 26/12/2016.
  */
@@ -179,22 +181,17 @@ public class CompletableFutureTest
         System.out.println(orders.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue, Collectors.counting())));
 
         Functions.calcTime("批量同步欺诈状态到运单", () ->
-            getToBeProcessedOrders().stream().collect(new BatchCollector<>(20, orderIds ->
-                    CompletableFuture.allOf(
-                        CompletableFuture.supplyAsync(() -> getFraudStateBatch(orderIds))
-                            .thenAccept
-                            (
-                                data -> data.entrySet().stream().map
-                                        (item -> CompletableFuture.runAsync
-                                            (() -> updateOrderFraudState(item.getKey(),
-                                                    item.getValue().orElse(FraudState.unknown)), executors)
-                                        ).collect(Collectors.toList())
-                            )
-                    ).join())
-            )
-        );
-
-        //getToBeProcessedOrders().stream().collect(new BatchCollector<>(10, orderIds -> CompletableFuture.allOf(CompletableFuture.supplyAsync(() -> getFraudStateBatch(orderIds)).thenAccept(data -> data.entrySet().stream().map(item -> CompletableFuture.runAsync(() -> updateOrderFraudState(item.getKey(), item.getValue().orElse(FraudState.unknown)), executors)).collect(Collectors.toList()))).join()));
+        {
+            int BATCH = 20;
+            List<Long> orders = getToBeProcessedOrders();
+            IntStream.rangeClosed(0, orders.size() / BATCH)
+                    .mapToObj(i -> orders.subList(i * BATCH, Math.min(orders.size(), (i + 1) * BATCH)))
+                    .parallel()
+                    .forEach(orderIds -> getFraudStateBatch(orderIds).entrySet().stream()
+                            .map(item -> CompletableFuture.runAsync(() -> updateOrderFraudState(item.getKey(),
+                                    item.getValue().orElse(FraudState.unknown)), executors))
+                            .collect(CompletableFutures.joinList()).join());
+        });
 
         System.out.println(orders.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue, Collectors.counting())));
     }
@@ -237,7 +234,6 @@ public class CompletableFutureTest
 
     private void updateOrderFraudState(long id, FraudState state)
     {
-        logger.info("updateOrderFraudState:" + id);
         try
         {
             Thread.sleep(500);
@@ -247,6 +243,8 @@ public class CompletableFutureTest
             e.printStackTrace();
         }
         orders.put(id, state);
+        logger.info("updateOrderFraudState:" + id + "->" + state.name());
+
     }
 
     enum FraudState
