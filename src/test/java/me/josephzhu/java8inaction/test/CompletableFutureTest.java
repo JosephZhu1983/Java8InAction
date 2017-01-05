@@ -1,6 +1,7 @@
 package me.josephzhu.java8inaction.test;
 
 
+import com.spotify.futures.CompletableFutures;
 import me.josephzhu.java8inaction.test.collector.BatchCollector;
 import me.josephzhu.java8inaction.test.common.Functions;
 import me.josephzhu.java8inaction.test.model.Customer;
@@ -143,6 +144,17 @@ public class CompletableFutureTest
                                 ((customer, product) -> Order.placeOrder(customer, product)))
                         .thenAccept(logger::info)
                         .join());
+
+        Functions.calcTime("组合多个CF", () ->
+        {
+            CompletableFuture<Integer> cf1 = echoService(1);
+            CompletableFuture<Integer> cf2 = echoService(2);
+            CompletableFuture<Integer> cf3 = echoService(3);
+
+            CompletableFutures.combine(cf1, cf2, cf3, (a, b, c) -> a+b+c)
+                .toCompletableFuture().whenComplete(logger::info).join();
+        });
+
     }
 
     private CompletableFuture<Integer> doubleService(int n)
